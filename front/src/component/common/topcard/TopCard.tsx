@@ -20,9 +20,9 @@ export default function TopCard({
         className,
       )}
     >
-      <div className="flex flex-col gap-3">
-        <span className="text-lg font-semibold">{title}</span>
-        <div className="text-2xl font-bold">{value}</div>
+      <div className="flex flex-col gap-7">
+        <span className="text-sm text-secondary-text">{title}</span>
+        <div className="text-3xl font-bold">{value}</div>
       </div>
       {icon}
     </div>

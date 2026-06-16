@@ -18,12 +18,12 @@ export default function BotCard({
   return (
     <div
       className={cn(
-        "flex justify-between items-center p-4 bg-white rounded-lg shadow",
+        "flex justify-between items-center px-4 py-6 bg-white rounded-lg shadow border border-gray-200 cursor-pointer hover:border-primary transition",
         className,
       )}
     >
       <div className="flex flex-col  gap-2">
-        <p className="text-2xl font-bold text-main-text">{estimateTitle}</p>
+        <p className="text-xl font-bold text-main-text">{estimateTitle}</p>
         <div className="flex gap-2">
           <span className="text-sm text-secondary-text">{estimateCompany}</span>
           <span className="text-sm text-secondary-text">•</span>
