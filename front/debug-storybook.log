@@ -1,0 +1,34 @@
+[20:11:12.897] [INFO] storybook v10.4.2
+[20:11:15.080] [DEBUG] Getting package.json info for C:/Users/이희주/Desktop/estimate-talk/front/package.json...
+[20:11:17.984] [INFO] Starting...
+[20:11:18.076] [WARN] No story files found for the specified pattern: [34mcomponents\**\*.stories.@(js|jsx|mjs|ts|tsx)[39m
+[20:11:18.393] [DEBUG] Starting preview..
+[20:11:18.524] [DEBUG] Using tsconfig paths for react-docgen
+[20:11:19.473] [WARN] 🚨 Unable to index ./src/component/common/botcard/BotCard.stories.tsx:
+  NoMetaError: CSF: default export must be an object C:/Users/이희주/Desktop/estimate-talk/front/src/component/common/botcard/BotCard.stories.tsx (line 11, col 0)
+
+More info: https://storybook.js.org/docs/writing-stories?ref=error#default-export
+    at enter (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-GD4AVVJ6.js:283:19)
+    at NodePath._call (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31696:22)
+    at NodePath.call (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31686:22)
+    at NodePath.visit (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31719:38)
+    at TraversalContext.visitQueue (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31605:49)
+    at TraversalContext.visitMultiple (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31590:21)
+    at TraversalContext.visit (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31619:52)
+    at traverseNode (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31644:61)
+    at NodePath.visit (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31719:224)
+    at TraversalContext.visitQueue (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/_node-chunks/chunk-6YHOQD7F.js:31605:49)
+[20:11:19.498] [ERROR] Failed to build the preview
+[20:11:19.504] [ERROR] Error: Unable to index ./src/component/common/botcard/BotCard.stories.tsx
+    at _StoryIndexGenerator.getIndexAndStats (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/core-server/index.js:16835:15)
+    at async _StoryIndexGenerator.getIndex (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/core-server/index.js:16824:13)
+    at async BasicMinimalPluginContext.config (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/@storybook/builder-vite/dist/_node-chunks/chunk-WHZKMS3Q.js:184:19)
+    at async runConfigHook (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/vite/dist/node/chunks/node.js:35033:15)
+    at async resolveConfig (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/vite/dist/node/chunks/node.js:34490:11)
+    at async _createServer (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/vite/dist/node/chunks/node.js:26197:65)
+    at async Module.start (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/@storybook/builder-vite/dist/index.js:1606:17)
+    at async storybookDevServer (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/core-server/index.js:18917:158)
+    at async buildOrThrow (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/core-server/index.js:8205:12)
+    at async buildDevStandalone (file:///C:/Users/%EC%9D%B4%ED%9D%AC%EC%A3%BC/Desktop/estimate-talk/front/node_modules/storybook/dist/core-server/index.js:19478:41)
+[20:11:19.511] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.

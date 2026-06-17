@@ -7,6 +7,7 @@ import Image from "next/image";
 import password_hide from "@/public/password_hide.svg";
 import password_show from "@/public/password-show.svg";
 import { useState } from "react";
+import { useSignup } from "@/app/hook/auth/useSignup";
 
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,6 +17,18 @@ export default function SignupPage() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [isEmailValid, setIsEmailValid] = useState(true);
+
+  const { mutate: signup, isPending } = useSignup();
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // 브라우저 새로고침 , 이동 막기
+
+    signup({
+      name,
+      email,
+      password,
+    });
+  };
 
   const onChangeName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -63,7 +76,7 @@ export default function SignupPage() {
         </span>
       </div>
       <div className="w-full max-w-[450px] bg-white border border-gray-200 rounded-xl px-6 py-6 sm:px-8 flex flex-col gap-4 mt-8">
-        <form className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
             label="이름"
             type="text"
@@ -103,11 +116,12 @@ export default function SignupPage() {
             onChange={onChangeConfirmPassword}
           />
           <Button
-            disabled={!isValid}
+            type="submit"
+            disabled={!isValid || isPending}
             className="mt-4 cursor-pointer"
             variant="primary"
           >
-            회원가입
+            {isPending ? "회원가입 중..." : "회원가입"}
           </Button>
         </form>
       </div>

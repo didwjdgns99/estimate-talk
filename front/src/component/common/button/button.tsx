@@ -15,7 +15,7 @@ export default function Button({
   return (
     <button
       className={cn(
-        "rounded-xl px-4 py-3 text-sm font-medium transform",
+        "rounded-xl px-4 py-3 text-sm font-medium transform cursor-pointer",
         variant === "primary"
           ? "bg-primary text-white hover:bg-primary/90"
           : "bg-gray-200 text-gray-700 hover:bg-gray-300",
