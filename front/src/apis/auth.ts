@@ -24,6 +24,7 @@ export function login(payload: LoginRequest) {
   const result = http("/api/auth/login", {
     method: "POST",
     body: JSON.stringify(payload),
+    credentials: "include",
   });
 
   return result;
