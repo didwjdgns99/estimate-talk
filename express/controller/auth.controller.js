@@ -6,7 +6,11 @@
  * catch에서 그외 에러와 500에러 처리
  * 로그아웃에서 cookie clear 해주기
  */
-const { loginService, signupService } = require("../service/auth.service");
+const {
+  loginService,
+  signupService,
+  meService,
+} = require("../service/auth.service");
 
 async function loginController(req, res) {
   try {
@@ -32,6 +36,7 @@ async function loginController(req, res) {
       isError: false,
       message: "로그인 성공",
       user: { id },
+      token,
     });
   } catch (error) {
     console.error("loginController error", error);
@@ -87,4 +92,27 @@ async function signupController(req, res) {
     });
   }
 }
-module.exports = { loginController, logoutController, signupController };
+
+async function meController(req, res) {
+  try {
+    const user = await meService(req.user.id);
+
+    return res.status(200).json({
+      isError: false,
+      user,
+    });
+  } catch (error) {
+    console.error("me controller error", error);
+    return res.status(error.status || 500).json({
+      isError: true,
+      code: error.code,
+      message: error.message || "유저 정보 조회 실패",
+    });
+  }
+}
+module.exports = {
+  loginController,
+  logoutController,
+  signupController,
+  meController,
+};
