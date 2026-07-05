@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 type ButtonProps = {
   variant?: "primary" | "secondary";
   className?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function Button({
