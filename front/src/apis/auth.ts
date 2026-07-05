@@ -11,6 +11,12 @@ export type LoginRequest = {
   password: string;
 };
 
+export type User = {
+  name: string;
+  email: string;
+  password: string;
+};
+
 export function signup(payload: SignupRequest) {
   const result = http("/api/auth/signup", {
     method: "POST",
@@ -28,4 +34,15 @@ export function login(payload: LoginRequest) {
   });
 
   return result;
+}
+
+export async function getMe(token?: string) {
+  return http("/api/auth/me", {
+    method: "GET",
+    headers: token
+      ? {
+          Cookie: `token=${token}`,
+        }
+      : undefined,
+  });
 }
