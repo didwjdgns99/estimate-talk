@@ -51,12 +51,7 @@ export async function getMeAction() {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
 
-    console.log("========== getMeAction 시작 ==========");
-    console.log("getMeAction token:", token);
-
     if (!token) {
-      console.log("getMeAction token 없음");
-
       return {
         isError: true,
         status: 401,
@@ -66,21 +61,12 @@ export async function getMeAction() {
 
     const data = await getMe(token);
 
-    console.log("getMeAction data:", data);
-    console.log("========== getMeAction 성공 ==========");
-
     return {
       isError: false,
       user: data.user,
     };
   } catch (error) {
-    console.log("========== getMeAction catch ==========");
-    console.log("getMeAction error:", error);
-
     if (error instanceof ApiError) {
-      console.log("ApiError status:", error.status);
-      console.log("ApiError message:", error.message);
-
       return {
         isError: true,
         status: error.status,

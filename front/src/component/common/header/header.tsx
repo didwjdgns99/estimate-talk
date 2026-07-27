@@ -16,12 +16,12 @@ export default function Header({ user }: HeaderProps) {
   return (
     <div className="w-full border-b border-gray-200 bg-white mb-10">
       <div className="flex justify-between items-center px-4 py-2 mx-auto max-w-6xl">
-        <Link href="/main">
+        <Link href="/">
           <Image src={Logo} alt="로고 이미지" width={120} height={60} />
         </Link>
 
         <div className="flex gap-6 items-center">
-          <Link href="/info">
+          <Link href={user ? "/info" : "/login"}>
             <span className="cursor-pointer hover:text-primary transition text-sm sm:text-[16px]">
               회사정보
             </span>

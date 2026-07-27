@@ -31,7 +31,7 @@ export const ThisMonth: Story = {
 export const TotalAmount: Story = {
   args: {
     title: "총 금액",
-    value: "4800만원",
+    value: "4,800만원",
     icon: <TrendingUp className="text-primary" size={22} />,
   },
 };

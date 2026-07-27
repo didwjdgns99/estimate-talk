@@ -56,7 +56,11 @@ async function loginService({ email, password }) {
     expiresIn: "1h",
   });
   return {
-    id: user.id,
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+    },
     token,
   };
 }
