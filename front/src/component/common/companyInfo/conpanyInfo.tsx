@@ -1,15 +1,20 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Input from "@/component/common/Input";
 import search from "@/public/search.svg";
 import Image from "next/image";
 import Button from "@/component/common/button/button";
 import { useDaumPostcodePopup } from "react-daum-postcode";
-import { useCreateCompanyInfo } from "@/app/hook/info/useCompanyInfo";
-import Router from "next/router";
+import {
+  useCreateCompanyInfo,
+  useGetCompanyInfo,
+} from "@/app/hook/info/useCompanyInfo";
+import { useRouter } from "next/navigation";
 
 export default function CompanyInfo() {
+  const router = useRouter();
+
   const [form, setForm] = useState({
     companyName: "",
     businessNumber: "",
@@ -21,7 +26,7 @@ export default function CompanyInfo() {
     fax: "",
     mobile: "",
     email: "",
-    zipcode: "", //우편번호
+    zipCode: "", //우편번호
     address: "",
     detailAddress: "",
   });
@@ -36,7 +41,7 @@ export default function CompanyInfo() {
     phone: false,
     mobile: false,
     email: false,
-    zipcode: false,
+    zipCode: false,
     address: false,
     detailAddress: false,
   });
@@ -45,6 +50,35 @@ export default function CompanyInfo() {
   const [stampPreview, setStampPreview] = useState<string | null>(null);
 
   const { mutate, isPending } = useCreateCompanyInfo();
+  const { data: companyInfoData, isLoading } = useGetCompanyInfo();
+
+  console.log({
+    companyInfoData,
+    isLoading,
+  });
+  useEffect(() => {
+    const companyInfo = companyInfoData?.data?.data;
+
+    if (!companyInfo) return;
+
+    setForm({
+      companyName: companyInfo.companyName ?? "",
+      businessNumber: companyInfo.businessNumber ?? "",
+      ceoName: companyInfo.ceoName ?? "",
+      businessType: companyInfo.businessType ?? "",
+      businessItem: companyInfo.businessItem ?? "",
+      manager: companyInfo.manager ?? "",
+      phone: companyInfo.phone ?? "",
+      fax: companyInfo.fax ?? "",
+      mobile: companyInfo.mobile ?? "",
+      email: companyInfo.email ?? "",
+      zipCode: companyInfo.zipCode ?? "",
+      address: companyInfo.address ?? "",
+      detailAddress: companyInfo.detailAddress ?? "",
+    });
+
+    setStampPreview(companyInfo.stampUrl ?? null);
+  }, [companyInfoData]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -64,7 +98,7 @@ export default function CompanyInfo() {
         console.log(data);
         alert("회사정보가 저장되었습니다.");
 
-        Router.push("/main");
+        router.push("/");
       },
 
       onError: (error) => {
@@ -90,7 +124,7 @@ export default function CompanyInfo() {
   const isEmailValid = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(
     form.email,
   );
-  const isZipcodeValid = /^[0-9]{5}$/.test(form.zipcode);
+  const iszipCodeValid = /^[0-9]{5}$/.test(form.zipCode);
   const isAddressValid = form.address.trim() !== "";
   const isDetailAddressValid = form.detailAddress.trim() !== "";
 
@@ -111,7 +145,7 @@ export default function CompanyInfo() {
       onComplete: (data) => {
         setForm((prev) => ({
           ...prev,
-          zipcode: data.zonecode,
+          zipCode: data.zonecode,
           address: data.address,
         }));
       },
@@ -296,11 +330,11 @@ export default function CompanyInfo() {
             <Input
               label="우편번호 *"
               placeholder="01234"
-              value={form.zipcode}
+              value={form.zipCode}
               onChange={(e) =>
                 setForm({
                   ...form,
-                  zipcode: e.target.value.replace(/[^0-9]/g, ""),
+                  zipCode: e.target.value.replace(/[^0-9]/g, ""),
                 })
               }
             />

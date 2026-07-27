@@ -21,9 +21,31 @@ export interface CreateCompanyInfo extends CompanyInfo {
 }
 
 export function createCompanyInfo(formData: FormData) {
-  const result = http("/api/companyInfo", {
-    method: "POST",
-    body: formData,
-  });
+  const result = http(
+    "/api/info",
+    {
+      method: "POST",
+      body: formData,
+    },
+    {
+      authRequired: true,
+    },
+  );
+  console.log("createCompanyInfo result", result);
+  return result;
+}
+
+export async function getCompanyInfo() {
+  const result = await http(
+    "/api/info",
+    {
+      method: "GET",
+      credentials: "include",
+    },
+    {
+      authRequired: true,
+    },
+  );
+  console.log("getCompanyInfo result", result);
   return result;
 }

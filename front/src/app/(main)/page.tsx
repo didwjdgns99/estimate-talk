@@ -5,6 +5,7 @@ import Button from "@/component/common/button/button";
 import search from "@/public/search.svg";
 import Image from "next/image";
 import BotCard from "@/component/common/botcard/BotCard";
+import Link from "next/link";
 
 const estimateList = [
   {
@@ -55,7 +56,7 @@ export default function Home() {
         <TopCard
           className="flex-1"
           title="이번달 금액"
-          value="4800만원"
+          value="4,800만원"
           icon={<TrendingUp className="text-primary" size={22} />}
         />
       </section>
@@ -76,11 +77,12 @@ export default function Home() {
                 placeholder="상호명으로 검색..."
               />
             </div>
-
-            <Button className="flex items-center gap-2">
-              <span className="text-2xl">+</span>
-              <span className="text-lg">새 견적서 만들기</span>
-            </Button>
+            <Link href="/estimate">
+              <Button className="flex items-center gap-2">
+                <span className="text-2xl">+</span>
+                <span className="text-lg">새 견적서 만들기</span>
+              </Button>
+            </Link>
           </div>
           <div className="flex flex-col gap-4">
             {estimateList.map((estimate) => (

@@ -21,7 +21,7 @@ export function useLogin() {
       return result;
     },
     onSuccess: () => {
-      router.push("/main");
+      router.push("/");
     },
     onError: (error) => {
       console.log("로그인 실패", error);

@@ -22,7 +22,7 @@ async function loginController(req, res) {
       });
     }
 
-    const { id, token } = await loginService({ email, password });
+    const { user, token } = await loginService({ email, password });
 
     res.cookie("token", token, {
       httpOnly: true, //JavaScript에서 쿠키 접근 불가
@@ -35,7 +35,7 @@ async function loginController(req, res) {
     return res.status(200).json({
       isError: false,
       message: "로그인 성공",
-      user: { id },
+      user: { id: user.id, name: user.name, email: user.email },
       token,
     });
   } catch (error) {
