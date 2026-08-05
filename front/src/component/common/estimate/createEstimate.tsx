@@ -8,35 +8,46 @@ type EstimateItem = {
   description: string;
   quantity: number;
   unitPrice: number;
-  totalPrice: number;
+  discountRate: number;
 };
 
 type ItemType = "description" | "quantity" | "unitPrice";
 
+//견적항목 행 만들기
 const createEmptyItem = (): EstimateItem => ({
   id: crypto.randomUUID(),
   description: "",
   quantity: 0,
   unitPrice: 0,
-  totalPrice: 0,
+  discountRate: 0,
 });
 
 export default function CreateEstimate() {
-  const [items, setItems] = useState<EstimateItem[]>([createEmptyItem()]);
-  const [isDiscount, setIsDiscount] = useState(false);
+  const [items, setItems] = useState<EstimateItem[]>(() => [
+    createEmptyItem(),
+  ]);
+
+  //할인 품목 토글
+  const [openedDiscountIds, setOpenedDiscountIds] = useState<string[]>([]);
+const [customDiscounts, setCustomDiscounts] = useState<
+  Record<string, string>
+>({});
+  //항목추가 
   const handleAddItem = () => {
     setItems((prev) => [...prev, createEmptyItem()]);
   };
 
+  //인풋 온체인지
   const onChangeItem = (
     e: React.ChangeEvent<HTMLInputElement>,
-    itemId: string,
-    fieldType: ItemType,
+    itemId: string, //행 아이디
+    fieldType: ItemType,// 품목/단가/수량 타입
   ) => {
     const value =
       fieldType === "description"
         ? e.target.value
         : Number(e.target.value.replace(/[^0-9]/g, ""));
+
     setItems((prev) =>
       prev.map((item) =>
         item.id === itemId
@@ -49,78 +60,184 @@ export default function CreateEstimate() {
     );
   };
 
+  const handleDiscountChange = (
+    itemId: string,
+    discountRate: number,
+  ) => {
+    const safeDiscountRate = Math.min(
+      Math.max(discountRate, 0),
+      100,
+    );
+
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === itemId
+          ? {
+              ...item,
+              discountRate: safeDiscountRate,
+            }
+          : item,
+      ),
+    );
+  };
+
+  const handleToggleDiscount = (itemId: string) => {
+    setOpenedDiscountIds((prev) =>
+      prev.includes(itemId)
+        ? prev.filter((id) => id !== itemId)
+        : [...prev, itemId],
+    );
+  };
+
+const handleCustomDiscountChange = (
+  itemId: string,
+  value: string,
+) => {
+  const onlyNumber = value.replace(/[^0-9]/g, "");
+
+ const safeValue =
+    onlyNumber === ""
+      ? ""
+      : String(Math.min(Number(onlyNumber), 100));
+
+  setCustomDiscounts((prev) => ({
+    ...prev,
+    [itemId]: safeValue,//해당 아이템아이디에 밸류값을 바꾸기 위해 
+  }));
+
+  handleDiscountChange(
+    itemId,
+    safeValue === "" ? 0 : Number(onlyNumber),
+  );
+};
+
+
   return (
-    <section className="bg-white border border-border rounded-2xl p-5 w-full">
-      <div className="flex justify-between ">
+    <section className="w-full rounded-2xl border border-border bg-white p-5">
+      <div className="flex justify-between">
         <span>견적 항목</span>
+
         <button
+          type="button"
           onClick={handleAddItem}
-          className="bg-primary text-white px-4 py-2 rounded-xl cursor-pointer"
+          className="cursor-pointer rounded-xl bg-primary px-4 py-2 text-white"
         >
           + 항목추가
         </button>
       </div>
+
       <div>
         {items.map((item) => {
-          const quantity = Number(item.quantity) || 0;
-          const unitPrice = Number(item.unitPrice) || 0;
-          const totalPrice = quantity * unitPrice;
+          const originalPrice = item.quantity * item.unitPrice;
+
+          const discountPrice =
+            originalPrice * (item.discountRate / 100);
+
+          const totalPrice = originalPrice - discountPrice;
+
+          const isDiscountOpen = openedDiscountIds.includes(item.id);
+
           return (
             <div
               key={item.id}
-              className="
-    mt-4 grid items-end gap-4
-    grid-cols-[2.5fr_0.7fr_1.5fr_120px]
-  "
+              className="mt-4 grid grid-cols-[2.5fr_0.7fr_1.5fr_120px] items-end gap-4"
             >
               <Input
                 label="품목/내용"
                 value={item.description}
                 placeholder="품목/내용을 입력하세요"
-                onChange={(e) => onChangeItem(e, item.id, "description")}
+                onChange={(e) =>
+                  onChangeItem(e, item.id, "description")
+                }
               />
+
               <Input
                 label="수량"
                 type="number"
                 value={item.quantity}
                 placeholder="수량을 입력하세요"
-                onChange={(e) => onChangeItem(e, item.id, "quantity")}
+                onChange={(e) =>
+                  onChangeItem(e, item.id, "quantity")
+                }
               />
+
               <Input
                 label="단가"
                 type="text"
                 value={item.unitPrice.toLocaleString("ko-KR")}
                 placeholder="단가를 입력하세요"
-                onChange={(e) => onChangeItem(e, item.id, "unitPrice")}
+                onChange={(e) =>
+                  onChangeItem(e, item.id, "unitPrice")
+                }
               />
-              <span>{totalPrice.toLocaleString()} 원</span>
-              <div>
+
+              <div className="flex flex-col">
+                {item.discountRate > 0 && (
+                  <span className="text-xs text-gray-400 line-through">
+                    {originalPrice.toLocaleString()}원
+                  </span>
+                )}
+
+                <span className="font-semibold">
+                  {totalPrice.toLocaleString()}원
+                </span>
+              </div>
+
+              <div className="col-span-4">
                 <button
                   type="button"
-                  onClick={() => setIsDiscount((prev) => !prev)}
+                  onClick={() => handleToggleDiscount(item.id)}
+                  className={`rounded-xl border px-3 py-2 text-sm ${
+                    item.discountRate > 0
+                      ? "border-primary bg-blue-50 text-primary"
+                      : "border-border bg-white"
+                  }`}
                 >
-                  {isDiscount ? "% 할인 없음" : "할인 없음"}
+                  {item.discountRate > 0
+                    ? `${item.discountRate}% 할인 적용`
+                    : "할인 없음"}
                 </button>
-                {isDiscount && (
-                  <div>
+
+                {isDiscountOpen && (
+                  <div className="mt-2 flex items-end gap-3">
                     <div className="flex gap-2">
-                      <button className="rounded-xl px-2 py-1 border border-border text-sm">
-                        없음
-                      </button>
-                      <button className="rounded-xl px-2 py-1 border border-border text-sm">
-                        5%
-                      </button>
-                      <button className="rounded-xl px-2 py-1 border border-border text-sm">
-                        10%
-                      </button>
-                      <button className="rounded-xl px-2 py-1 border border-border text-sm">
-                        15%
-                      </button>
-                      <button className="rounded-xl px-2 py-1 border border-border text-sm">
-                        25%
-                      </button>
+                      {[0, 5, 10, 15, 20].map((rate) => (
+                        <button
+                          key={rate}
+                          type="button"
+                          onClick={() =>
+                            handleDiscountChange(item.id, rate)
+                          }
+                          className={`rounded-xl border px-3 py-2 text-sm ${
+                            item.discountRate === rate
+                              ? "border-primary bg-primary text-white"
+                              : "border-border bg-white text-gray-700"
+                          }`}
+                        >
+                          {rate === 0 ? "없음" : `${rate}%`}
+                        </button>
+                      ))}
                     </div>
-                    <Input placeholder="직접 입력" />
+
+                   <div className="relative w-36">
+  <Input
+    type="text"
+    inputMode="numeric"
+    placeholder="직접 입력"
+    value={customDiscounts[item.id] ?? ""}
+    onChange={(e) =>
+      handleCustomDiscountChange(item.id, e.target.value)
+    }
+    className="pr-8"
+  />
+ 
+ //%추가
+  {customDiscounts[item.id] && (
+    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+      %
+    </span>
+  )}
+</div>
                   </div>
                 )}
               </div>
