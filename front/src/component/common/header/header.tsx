@@ -2,17 +2,17 @@ import Image from "next/image";
 import Logo from "@/public/LOGO_2.png";
 import Link from "next/link";
 
-type User = {
+export type User = {
   id: string;
   name: string;
   email: string;
 };
 
-type HeaderProps = {
+export type UserProps = {
   user: User | null;
 };
 
-export default function Header({ user }: HeaderProps) {
+export default function Header({ user }: UserProps) {
   return (
     <div className="w-full border-b border-gray-200 bg-white mb-10">
       <div className="flex justify-between items-center px-4 py-2 mx-auto max-w-6xl">

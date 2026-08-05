@@ -7,7 +7,7 @@ export default function EstimatePage() {
       <span className="text-gray-500 mb-8 text-[18px]">
         견적 내용을 입력하고 AI가 최종 검토를 도와드립니다.
       </span>
-      <Estimate />;
+      <Estimate />
     </div>
   );
 }

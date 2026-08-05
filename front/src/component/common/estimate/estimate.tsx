@@ -5,6 +5,7 @@ import Button from "@/component/common/button/button";
 import { useState } from "react";
 import trash from "@/public/trash.svg";
 import Image from "next/image";
+import EstimateForm from "./estimateForm";
 
 type Column = {
   id: string;
@@ -118,164 +119,168 @@ export default function Estimate() {
   }, 0);
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto flex w-full max-w-5xl flex-col gap-8 rounded-2xl bg-white p-8 shadow"
-    >
-      <div className="flex flex-col gap-6 lg:flex-row">
-        <div className="flex-1">
-          <Input
-            label="견적서 제목"
-            placeholder="견적서 제목을 입력하세요"
-            className="w-full"
-          />
-        </div>
-        <div className="flex-1">
-          <Input
-            label="고객사명"
-            placeholder="고객 이름을 입력하세요"
-            className="w-full"
-          />
-        </div>
-      </div>
-      <div className="border-b border-gray-200 pb-6">
-        <div className="flex items-center justify-between">
-          <span className="text-xl font-bold">견적 항목</span>
-          <Button
-            variant="primary"
-            type="button"
-            children="항목 추가"
-            onClick={handleAddRow}
-          />
-        </div>
-        <div className="flex flex-col gap-4">
-          {rows.map((row, rowIndex) => {
-            const quantity = Number(row.values.quantity) || 0;
-            const unitPrice = Number(row.values.unitPrice) || 0;
-            const rowTotal = quantity * unitPrice;
-            return (
-              <div key={row.id} className="flex flex-row max-md:flex-col gap-3">
-                {/* 품목/내용 */}
-                <div className="w-full md:max-w-[450px]">
-                  {rowIndex === 0 && (
-                    <label className="mb-2 w-auto block text-sm font-semibold text-gray-900">
-                      품목/내용
-                    </label>
-                  )}
-                  <Input
-                    placeholder="견적상품을 입력하세요."
-                    type="text"
-                    value={row.values.description ?? ""}
-                    onChange={(event) =>
-                      handleRowValueChange(
-                        row.id,
-                        "description",
-                        event.target.value,
-                      )
-                    }
-                    className="w-full "
-                  />
-                </div>
+    <EstimateForm />
+    // <form
+    //   onSubmit={handleSubmit}
+    //   className="mx-auto flex w-full max-w-5xl flex-col gap-8 rounded-2xl bg-white p-8 shadow"
+    // >
+    //   <div className="flex flex-col gap-6 lg:flex-row">
+    //     <div className="flex-1">
+    //       <Input
+    //         label="견적서 제목"
+    //         placeholder="견적서 제목을 입력하세요"
+    //         className="w-full"
+    //       />
+    //     </div>
+    //     <div className="flex-1">
+    //       <Input
+    //         label="고객사명"
+    //         placeholder="고객 이름을 입력하세요"
+    //         className="w-full"
+    //       />
+    //     </div>
+    //   </div>
+    //   <div className="border-b border-gray-200 pb-6">
+    //     <div className="flex items-center justify-between">
+    //       <span className="text-xl font-bold">견적 항목</span>
+    //       <Button
+    //         variant="primary"
+    //         type="button"
+    //         children="항목 추가"
+    //         onClick={handleAddRow}
+    //       />
+    //     </div>
+    //     <div className="flex flex-col gap-4">
+    //       {rows.map((row, rowIndex) => {
+    //         const quantity = Number(row.values.quantity) || 0;
+    //         const unitPrice = Number(row.values.unitPrice) || 0;
+    //         const rowTotal = quantity * unitPrice;
+    //         return (
+    //           <div
+    //             key={row.id}
+    //             className="flex flex-row max-md:flex-col gap-3"
+    //           >
+    //             {/* 품목/내용 */}
+    //             <div className="w-full md:max-w-[450px]">
+    //               {rowIndex === 0 && (
+    //                 <label className="mb-2 w-auto block text-sm font-semibold text-gray-900">
+    //                   품목/내용
+    //                 </label>
+    //               )}
+    //               <Input
+    //                 placeholder="견적상품을 입력하세요."
+    //                 type="text"
+    //                 value={row.values.description ?? ""}
+    //                 onChange={(event) =>
+    //                   handleRowValueChange(
+    //                     row.id,
+    //                     "description",
+    //                     event.target.value,
+    //                   )
+    //                 }
+    //                 className="w-full "
+    //               />
+    //             </div>
 
-                {/* 수량 / 단가 / 합계 / 삭제 */}
-                <div className="grid grid-cols-[1fr_auto_28px] items-end gap-2">
-                  <div className="flex gap-4 w-full">
-                    {/* 수량 */}
-                    <div className="min-w-0 max-w-[200px]">
-                      {rowIndex === 0 && (
-                        <label className="min-w-25 mb-2 block text-sm font-semibold text-gray-900">
-                          수량
-                        </label>
-                      )}
-                      <Input
-                        placeholder="1"
-                        type="number"
-                        value={row.values.quantity ?? ""}
-                        onChange={(event) =>
-                          handleRowValueChange(
-                            row.id,
-                            "quantity",
-                            event.target.value,
-                          )
-                        }
-                        className="w-full "
-                      />
-                    </div>
+    //             {/* 수량 / 단가 / 합계 / 삭제 */}
+    //             <div className="grid grid-cols-[1fr_auto_28px] items-end gap-2">
+    //               <div className="flex gap-4 w-full">
+    //                 {/* 수량 */}
+    //                 <div className="min-w-0 max-w-[200px]">
+    //                   {rowIndex === 0 && (
+    //                     <label className="min-w-25 mb-2 block text-sm font-semibold text-gray-900">
+    //                       수량
+    //                     </label>
+    //                   )}
+    //                   <Input
+    //                     placeholder="1"
+    //                     type="number"
+    //                     value={row.values.quantity ?? ""}
+    //                     onChange={(event) =>
+    //                       handleRowValueChange(
+    //                         row.id,
+    //                         "quantity",
+    //                         event.target.value,
+    //                       )
+    //                     }
+    //                     className="w-full "
+    //                   />
+    //                 </div>
 
-                    {/* 단가 */}
-                    <div className="min-w-0 max-w-[200px]">
-                      {rowIndex === 0 && (
-                        <label className="mb-2 block text-sm font-semibold text-gray-900">
-                          단가
-                        </label>
-                      )}
-                      <Input
-                        placeholder="10,000"
-                        type="text"
-                        inputMode="numeric" //모바일 키패드 보여주기
-                        value={
-                          row.values.unitPrice
-                            ? Number(row.values.unitPrice).toLocaleString(
-                                "ko-KR",
-                              )
-                            : ""
-                        }
-                        onChange={(event) => {
-                          const value = event.target.value.replace(
-                            /[^0-9]/g,
-                            "",
-                          );
+    //                 {/* 단가 */}
+    //                 <div className="min-w-0 max-w-[200px]">
+    //                   {rowIndex === 0 && (
+    //                     <label className="mb-2 block text-sm font-semibold text-gray-900">
+    //                       단가
+    //                     </label>
+    //                   )}
+    //                   <Input
+    //                     placeholder="10,000"
+    //                     type="text"
+    //                     inputMode="numeric" //모바일 키패드 보여주기
+    //                     value={
+    //                       row.values.unitPrice
+    //                         ? Number(row.values.unitPrice).toLocaleString(
+    //                             "ko-KR",
+    //                           )
+    //                         : ""
+    //                     }
+    //                     onChange={(event) => {
+    //                       const value = event.target.value.replace(
+    //                         /[^0-9]/g,
+    //                         "",
+    //                       );
 
-                          handleRowValueChange(row.id, "unitPrice", value);
-                        }}
-                        className="w-full"
-                      />
-                    </div>
-                  </div>
+    //                       handleRowValueChange(row.id, "unitPrice", value);
+    //                     }}
+    //                     className="w-full"
+    //                   />
+    //                 </div>
+    //               </div>
 
-                  {/* 합계 */}
-                  <div className="flex h-12 items-end justify-end whitespace-nowrap text-[14px] mb-1 font-semibold">
-                    {rowTotal.toLocaleString()}원
-                  </div>
+    //               {/* 합계 */}
+    //               <div className="flex h-12 items-end justify-end whitespace-nowrap text-[14px] mb-1 font-semibold">
+    //                 {rowTotal.toLocaleString()}원
+    //               </div>
 
-                  {/* 삭제 */}
-                  {rowIndex > 0 ? (
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteRow(row.id)}
-                      className="flex h-12 w-7 items-end justify-end text-red-500 hover:text-red-600 mb-1"
-                      aria-label={`${rowIndex + 1}번째 항목 삭제`}
-                    >
-                      <Image
-                        src={trash}
-                        alt="삭제이미지"
-                        width={20}
-                        height={20}
-                      />
-                    </button>
-                  ) : (
-                    <div className="h-12 w-7" />
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      <div>
-        <div className="flex justify-between mb-4">
-          <span className="text-xl font-semibold">총 금액</span>
-          <span className="text-primary font-bold text-3xl">
-            {totalAmount.toLocaleString("ko-KR")}원
-          </span>
-        </div>
-        <Button
-          variant="primary"
-          type="submit"
-          children="AI 검토 후 저장하기"
-          className="w-full text-lg"
-        />
-      </div>
-    </form>
+    //               {/* 삭제 */}
+    //               {rowIndex > 0 ? (
+    //                 <button
+    //                   type="button"
+    //                   onClick={() => handleDeleteRow(row.id)}
+    //                   className="flex h-12 w-7 items-end justify-end text-red-500 hover:text-red-600 mb-1"
+    //                   aria-label={`${rowIndex + 1}번째 항목 삭제`}
+    //                 >
+    //                   <Image
+    //                     src={trash}
+    //                     alt="삭제이미지"
+    //                     width={20}
+    //                     height={20}
+    //                   />
+    //                 </button>
+    //               ) : (
+    //                 <div className="h-12 w-7" />
+    //               )}
+    //             </div>
+    //           </div>
+    //         );
+    //       })}
+    //     </div>
+    //   </div>
+    //   <div>
+    //     <div className="flex justify-between mb-4">
+    //       <span className="text-xl font-semibold">총 금액</span>
+    //       <span className="text-primary font-bold text-3xl">
+    //         {totalAmount.toLocaleString("ko-KR")}원
+    //       </span>
+    //     </div>
+    //     <Button
+    //       variant="primary"
+    //       type="submit"
+    //       children="AI 검토 후 저장하기"
+    //       className="w-full text-lg"
+    //     />
+    //   </div>
+    // </form>
   );
 }
