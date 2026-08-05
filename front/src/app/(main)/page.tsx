@@ -6,6 +6,7 @@ import search from "@/public/search.svg";
 import Image from "next/image";
 import BotCard from "@/component/common/botcard/BotCard";
 import Link from "next/link";
+import { getMeAction } from "../action/getMe.action";
 
 const estimateList = [
   {
@@ -31,7 +32,8 @@ const estimateList = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const user = await getMeAction();
   return (
     <main className="min-h-screen bg-background text-main-text">
       <section className="mx-auto max-w-6xl px-6 py-10">
@@ -77,7 +79,7 @@ export default function Home() {
                 placeholder="상호명으로 검색..."
               />
             </div>
-            <Link href="/estimate">
+            <Link href={user ? "/estimate" : "/login"}>
               <Button className="flex items-center gap-2">
                 <span className="text-2xl">+</span>
                 <span className="text-lg">새 견적서 만들기</span>
