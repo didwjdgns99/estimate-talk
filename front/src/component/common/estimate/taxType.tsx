@@ -1,12 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { TaxTypeValue } from "@/component/common/estimate/estimateItem";
 
-type TaxTypeValue = "taxable" | "taxFree";
-
-export default function TaxType() {
-  const [taxType, setTaxType] = useState<TaxTypeValue>("taxable");
-
+export default function TaxType({
+  taxType,
+  setTaxType,
+}: {
+  taxType: TaxTypeValue;
+  setTaxType: (taxType: TaxTypeValue) => void;
+}) {
   const onClickTaxable = () => {
     setTaxType("taxable");
   };
