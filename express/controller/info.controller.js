@@ -1,6 +1,7 @@
 const {
   createInfoService,
   getInfoService,
+  checkBusinessStatusService,
 } = require("../service/info.service");
 
 async function createInfo(req, res) {
@@ -48,4 +49,28 @@ async function getInfo(req, res) {
   }
 }
 
-module.exports = { createInfo, getInfo };
+async function checkBusinessStatusController(req, res, next) {
+  try {
+    const { businessNumber } = req.body;
+
+    if (!businessNumber) {
+      return res.status(400).json({
+        message: "사업자등록번호를 입력해주세요.",
+      });
+    }
+
+    const result = await checkBusinessStatusService(businessNumber);
+
+    return res.status(200).json({
+      message: "사업자등록번호 상태조회 성공",
+      data: result,
+    });
+  } catch (error) {
+    return res.status(error.status || 500).json({
+      message: error.message || "사업자등록번호 상태조회 실패",
+      data: null,
+    });
+  }
+}
+
+module.exports = { createInfo, getInfo, checkBusinessStatusController };
