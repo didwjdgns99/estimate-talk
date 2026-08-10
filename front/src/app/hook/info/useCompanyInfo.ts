@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   createCompanyInfoAction,
   getCompanyInfoAction,
+  checkBusinessStatusAction,
 } from "@/app/action/companyInfo.action";
 
 export function useCreateCompanyInfo() {
@@ -17,5 +18,12 @@ export function useGetCompanyInfo() {
     queryKey: ["companyInfo"],
     queryFn: getCompanyInfoAction,
     retry: false,
+  });
+}
+
+export function useCheckBusinessStatus() {
+  return useMutation({
+    mutationFn: (businessNumber: string) =>
+      checkBusinessStatusAction(businessNumber),
   });
 }
