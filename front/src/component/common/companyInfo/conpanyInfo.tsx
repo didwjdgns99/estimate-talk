@@ -9,6 +9,7 @@ import { useDaumPostcodePopup } from "react-daum-postcode";
 import {
   useCreateCompanyInfo,
   useGetCompanyInfo,
+  useCheckBusinessStatus,
 } from "@/app/hook/info/useCompanyInfo";
 import { useRouter } from "next/navigation";
 
@@ -50,12 +51,16 @@ export default function CompanyInfo() {
   const [stampPreview, setStampPreview] = useState<string | null>(null);
 
   const { mutate, isPending } = useCreateCompanyInfo();
-  const { data: companyInfoData, isLoading } = useGetCompanyInfo();
+  const { data: companyInfoData, isLoading, isError } = useGetCompanyInfo();
+  const { mutate: checkBusinessStatus, isPending: isCheckingBusinessStatus } =
+    useCheckBusinessStatus();
 
   console.log({
     companyInfoData,
     isLoading,
+    isError,
   });
+
   useEffect(() => {
     const companyInfo = companyInfoData?.data?.data;
 
@@ -101,6 +106,21 @@ export default function CompanyInfo() {
         router.push("/");
       },
 
+      onError: (error) => {
+        alert(error.message);
+      },
+    });
+  };
+
+  const handleCheckBusinessStatus = () => {
+    if (!form.businessNumber) {
+      alert("사업자등록번호를 입력하세요.");
+      return;
+    }
+    checkBusinessStatus(form.businessNumber, {
+      onSuccess: (data) => {
+        alert(data.data.message);
+      },
       onError: (error) => {
         alert(error.message);
       },
@@ -169,6 +189,9 @@ export default function CompanyInfo() {
     setStampPreview(URL.createObjectURL(file));
   };
 
+  if (isLoading) return <div>회사정보를 불러오는 중입니다.</div>;
+  if (isError) return <div>회사정보를 불러오는 중에 오류가 발생했습니다.</div>;
+
   return (
     <form onSubmit={handleSubmit} className="max-w-[640px] m-auto">
       <div className="flex flex-col gap-8 px-4">
@@ -186,21 +209,49 @@ export default function CompanyInfo() {
                 : ""
             }
           />
-          <Input
-            label="사업자번호 *"
-            placeholder="123-45-67890"
-            value={form.businessNumber}
-            onChange={(e) =>
-              setForm({ ...form, businessNumber: e.target.value })
-            }
-            name="businessNumber"
-            onBlur={handleBlur}
-            errorMessage={
-              touched.businessNumber && !isBusinessNumberValid
-                ? "사업자번호를 입력하세요."
-                : ""
-            }
-          />
+          <div className="flex items-end gap-2">
+            <div className="flex-1">
+              <Input
+                label="사업자번호 *"
+                placeholder="123-45-67890"
+                value={form.businessNumber}
+                onChange={(e) =>
+                  setForm({ ...form, businessNumber: e.target.value })
+                }
+                name="businessNumber"
+                onBlur={handleBlur}
+                errorMessage={
+                  touched.businessNumber && !isBusinessNumberValid
+                    ? "사업자번호를 입력하세요."
+                    : ""
+                }
+              />
+            </div>
+
+            <button
+              type="button"
+              disabled={!isBusinessNumberValid}
+              onClick={() => checkBusinessStatus(form.businessNumber)}
+              className="
+      h-12
+      shrink-0
+      rounded-lg
+      border
+      border-primary
+      px-4
+      text-sm
+      font-medium
+      text-primary
+      transition
+      hover:bg-primary/10
+      disabled:cursor-not-allowed
+      disabled:border-gray-200
+      disabled:text-gray-300
+    "
+            >
+              사업자 확인
+            </button>
+          </div>
           <Input
             label="대표자 *"
             placeholder="홍길동"

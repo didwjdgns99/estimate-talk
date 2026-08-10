@@ -49,3 +49,21 @@ export async function getCompanyInfo() {
   console.log("getCompanyInfo result", result);
   return result;
 }
+
+export async function checkBusinessStatus(businessNumber: string) {
+  const result = await http(
+    "/api/info/business-status",
+    {
+      method: "POST",
+      body: JSON.stringify({ businessNumber }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+    {
+      authRequired: true,
+    },
+  );
+
+  return result;
+}
