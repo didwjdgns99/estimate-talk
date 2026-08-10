@@ -39,23 +39,26 @@ async function createInfoService(userId, payload, file) {
 
   const stampKey = await uploadStamp(file, userId);
 
-  const companyInfo = await CompanyInfo.create({
-    userId,
-    companyName,
-    businessNumber: cleanBusinessNumber,
-    ceoName,
-    businessType,
-    businessItem,
-    manager,
-    phone,
-    fax,
-    mobile,
-    email,
-    zipCode,
-    address,
-    detailAddress,
-    stampKey,
-  });
+  const companyInfo = await CompanyInfo.findOneAndUpdate(
+    { userId },
+    {
+      companyName,
+      businessNumber: cleanBusinessNumber,
+      ceoName,
+      businessType,
+      businessItem,
+      manager,
+      phone,
+      fax,
+      mobile,
+      email,
+      zipCode,
+      address,
+      detailAddress,
+      stampKey,
+    },
+    { new: true, upsert: true },
+  );
 
   return companyInfo;
 }
@@ -78,7 +81,43 @@ async function getInfoService(userId) {
   };
 }
 
+async function checkBusinessStatusService(businessNumber) {
+  const cleanBusinessNumber = businessNumber.replaceAll("-", "");
+
+  const response = await fetch(
+    `https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${process.env.NTS_SERVICE_KEY}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        b_no: [cleanBusinessNumber],
+      }),
+    },
+  );
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error = new Error(data.message || "사업자 상태조회에 실패했습니다.");
+    error.status = response.status;
+    throw error;
+  }
+  const business = data.data?.[0];
+
+  // 국세청에 등록되지 않은 사업자번호
+  if (!business || !business.b_stt) {
+    const error = new Error("등록되지 않은 사업자등록번호입니다.");
+    error.status = 404;
+    throw error;
+  }
+
+  return business;
+}
+
 module.exports = {
   createInfoService,
   getInfoService,
+  checkBusinessStatusService,
 };

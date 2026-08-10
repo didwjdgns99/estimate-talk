@@ -1,6 +1,10 @@
 const infoRoute = require("express").Router();
 const multer = require("multer");
-const { createInfo, getInfo } = require("../controller/info.controller");
+const {
+  createInfo,
+  getInfo,
+  checkBusinessStatusController,
+} = require("../controller/info.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
 
 const upload = multer({
@@ -29,5 +33,10 @@ const upload = multer({
 
 infoRoute.post("/", authMiddleware, upload.single("stamp"), createInfo);
 infoRoute.get("/", authMiddleware, getInfo);
+infoRoute.post(
+  "/business-status",
+  authMiddleware,
+  checkBusinessStatusController,
+);
 
 module.exports = infoRoute;
