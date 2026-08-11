@@ -56,6 +56,7 @@ export async function checkBusinessStatusAction(businessNumber: string) {
       data,
     };
   } catch (error) {
+    console.error("사업자 상태조회 에러:", error);
     if (error instanceof ApiError) {
       throw new Error(error.message);
     }
