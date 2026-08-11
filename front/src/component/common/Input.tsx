@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 type InputProps = {
-  label?: string;
+  label?: React.ReactNode;
   errorMessage?: string;
   helperText?: string;
   className?: string;

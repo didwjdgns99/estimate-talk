@@ -49,6 +49,8 @@ export default function CompanyInfo() {
 
   const [stampFile, setStampFile] = useState<File | null>(null);
   const [stampPreview, setStampPreview] = useState<string | null>(null);
+  const [isSuceessBusinessStatus, setIsSuccessBusinessStatus] = useState(false);
+  const [businessStatus, setBusinessStatus] = useState("");
 
   const { mutate, isPending } = useCreateCompanyInfo();
   const { data: companyInfoData, isLoading, isError } = useGetCompanyInfo();
@@ -119,10 +121,13 @@ export default function CompanyInfo() {
     }
     checkBusinessStatus(form.businessNumber, {
       onSuccess: (data) => {
-        alert(data.data.message);
+        const business = data.data.data.b_stt;
+        setIsSuccessBusinessStatus(true);
+        setBusinessStatus(business);
       },
       onError: (error) => {
         alert(error.message);
+        setBusinessStatus("");
       },
     });
   };
@@ -144,8 +149,7 @@ export default function CompanyInfo() {
   const isEmailValid = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(
     form.email,
   );
-  const iszipCodeValid = /^[0-9]{5}$/.test(form.zipCode);
-  const isAddressValid = form.address.trim() !== "";
+
   const isDetailAddressValid = form.detailAddress.trim() !== "";
 
   const isFormValid =
@@ -212,7 +216,17 @@ export default function CompanyInfo() {
           <div className="flex items-end gap-2">
             <div className="flex-1">
               <Input
-                label="사업자번호 *"
+                label={
+                  <div className="flex items-center gap-2">
+                    <span>사업자번호 *</span>
+
+                    {isSuceessBusinessStatus && (
+                      <span className="text-xs font-normal text-primary">
+                        ✓ {businessStatus}로 조회되었습니다.
+                      </span>
+                    )}
+                  </div>
+                }
                 placeholder="123-45-67890"
                 value={form.businessNumber}
                 onChange={(e) =>
@@ -231,7 +245,7 @@ export default function CompanyInfo() {
             <button
               type="button"
               disabled={!isBusinessNumberValid}
-              onClick={() => checkBusinessStatus(form.businessNumber)}
+              onClick={() => handleCheckBusinessStatus()}
               className="
       h-12
       shrink-0
