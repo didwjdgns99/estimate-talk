@@ -449,12 +449,26 @@ export default function CompanyInfo() {
             회사 직인
           </label>
 
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleStampChange}
-            className="block w-full rounded-lg border border-border bg-white px-4 py-3 text-sm text-main-text"
-          />
+           <div className="flex items-center gap-3">
+    <label
+      htmlFor="stamp"
+      className="shrink-0 cursor-pointer rounded-lg border border-primary px-4 py-3 text-sm font-medium text-primary transition hover:bg-blue-50"
+    >
+      파일 선택
+    </label>
+
+    <span className="min-w-0 truncate text-sm text-secondary-text">
+      {stampFile ? stampFile.name : "선택된 파일이 없습니다."}
+    </span>
+
+    <input
+      id="stamp"
+      type="file"
+      accept="image/*"
+      onChange={handleStampChange}
+      className="hidden"
+    />
+  </div>
 
           {stampPreview && (
             <div className="mt-4">
