@@ -2,10 +2,13 @@
 
 import Input from "@/component/common/Input";
 import Button from "@/component/common/button/button";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import trash from "@/public/trash.svg";
 import Image from "next/image";
 import EstimateForm from "./estimateForm";
+import {useUser} from "@/context/userContext"
+import { useRouter } from "next/navigation";
+
 
 type Column = {
   id: string;
@@ -51,6 +54,17 @@ const createEmptyRow = (columns: Column[]) => {
 };
 
 export default function Estimate() {
+
+  const router = useRouter()
+ const { user } = useUser();
+
+useEffect(() => {
+  if (!user) {
+    router.replace("/login");
+  }
+}, [user, router]);
+
+
   const [rows, setRows] = useState<EstimateRow[]>(() => [
     createEmptyRow(columns),
   ]); //useState로는 아무인자도 안줘도되는 createEmptyRow는 columns를 다른곳에서 받아서 실행되는 함수가 초기값이다

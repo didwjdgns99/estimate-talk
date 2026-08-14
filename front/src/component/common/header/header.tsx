@@ -1,6 +1,9 @@
+"use client"
+
 import Image from "next/image";
 import Logo from "@/public/LOGO_2.png";
 import Link from "next/link";
+import {useUser} from "@/context/userContext"
 
 export type User = {
   id: string;
@@ -12,7 +15,10 @@ export type UserProps = {
   user: User | null;
 };
 
-export default function Header({ user }: UserProps) {
+export default function Header() {
+
+ const { user } = useUser();
+
   return (
     <div className="w-full border-b border-gray-200 bg-white mb-10">
       <div className="flex justify-between items-center px-4 py-2 mx-auto max-w-6xl">
