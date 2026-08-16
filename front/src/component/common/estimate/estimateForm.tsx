@@ -10,16 +10,49 @@ import {
   createEmptyItem,
 } from "@/component/common/estimate/estimateItem";
 import Button from "@/component/common/button/button";
+import { useCreateEstimate } from "@/app/hook/estimate/useCreateEstimate";
+import { useRouter } from "next/navigation";
 
 export default function EstimateForm() {
   const [items, setItems] = useState<EstimateItem[]>([createEmptyItem()]);
   const [taxType, setTaxType] = useState<"taxable" | "taxFree">("taxable");
+  const [title, setTitle] = useState("");
+  const [customer, setCustomer] = useState("");
 
   const hasDiscount = items.some((item) => item.discountRate > 0);
+  const { mutate: createEstimate } = useCreateEstimate();
+
+  const router = useRouter();
+
+  const handleCreateEstimate = () => {
+    createEstimate(
+      {
+        items,
+        taxType,
+        title,
+        customer,
+      },
+      {
+        onSuccess: (result) => {
+          router.push(`/estimate/${result.data.estimateId}`);
+        },
+        onError: (error) => {
+          console.error(error);
+          alert("견적서 생성에 실패했습니다.");
+        },
+      },
+    );
+    //온석세스 에러 처리
+  };
 
   return (
     <div className="flex flex-col gap-5 w-full">
-      <Customer />
+      <Customer
+        title={title}
+        setTitle={setTitle}
+        customer={customer}
+        setCustomer={setCustomer}
+      />
       <TaxType taxType={taxType} setTaxType={setTaxType} />
       <CreateEstimate items={items} setItems={setItems} />
       <EstimateSummary
@@ -27,7 +60,11 @@ export default function EstimateForm() {
         taxType={taxType}
         hasDiscount={hasDiscount}
       />
-      <Button children="견적서 생성하기" className="w-full text-lg mb-8" />
+      <Button
+        onClick={handleCreateEstimate}
+        children="견적서 생성하기"
+        className="w-full text-lg mb-8"
+      />
     </div>
   );
 }
