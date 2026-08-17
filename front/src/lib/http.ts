@@ -37,6 +37,7 @@ export async function http(
 
     const res = await fetch(`${API_BASE_URL}${path}`, {
       ...options,
+      credentials: "include",
       signal: controller.signal,
       headers: {
         ...(options.body && !isFormData

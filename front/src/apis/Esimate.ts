@@ -16,8 +16,14 @@ export type CreateEstimateRequest = {
 };
 
 export async function createEstimateApi(data: CreateEstimateRequest) {
-  return http("/api/estimate", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+  return http(
+    "/api/estimate",
+    {
+      method: "POST",
+      body: JSON.stringify(data),
+    },
+    {
+      authRequired: true,
+    },
+  );
 }
