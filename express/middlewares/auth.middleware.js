@@ -22,6 +22,8 @@ function authMiddleware(req, res, next) {
 
     const decoded = jwt.verify(token, secret);
 
+    console.log("decoded:", decoded);
+
     req.user = decoded;
 
     next();
