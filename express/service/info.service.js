@@ -1,5 +1,6 @@
 const CompanyInfo = require("../models/companyInfo.model");
 const { uploadStamp, getStampUrl } = require("./s3.service");
+const AppError = require("../utils/AppError");
 
 async function createInfoService(userId, payload, file) {
   const {
@@ -30,12 +31,6 @@ async function createInfoService(userId, payload, file) {
   //   err.status = 409;
   //   throw err;
   // }
-
-  if (existingEmail) {
-    const err = new Error("이미 존재하는 이메일입니다.");
-    err.status = 409;
-    throw err;
-  }
 
   const stampKey = await uploadStamp(file, userId);
 
@@ -71,6 +66,13 @@ async function getInfoService(userId) {
     return null;
   }
 
+  if (!companyInfo.stampKey) {
+    return {
+      ...companyInfo,
+      stampUrl: null,
+    };
+  }
+
   // DB의 stampKey를 이용해서 직인 이미지 URL 생성
   const stampUrl = await getStampUrl(companyInfo.stampKey);
 
@@ -84,36 +86,69 @@ async function getInfoService(userId) {
 async function checkBusinessStatusService(businessNumber) {
   const cleanBusinessNumber = businessNumber.replaceAll("-", "");
 
-  const response = await fetch(
-    `https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${process.env.NTS_SERVICE_KEY}`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
+  try {
+    const response = await fetch(
+      `https://api.odcloud.kr/api/nts-businessman/v1/status?serviceKey=${process.env.NTS_SERVICE_KEY}`,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: JSON.stringify({
+          b_no: [cleanBusinessNumber],
+        }),
       },
-      body: JSON.stringify({
-        b_no: [cleanBusinessNumber],
-      }),
-    },
-  );
+    );
 
-  const data = await response.json();
+    if (!response.ok) {
+      throw new AppError(
+        502,
+        "사업자 상태조회에 실패했습니다.",
+        "BUSINESSC_CHECK_SERVER_ERROR",
+      );
+    }
 
-  if (!response.ok) {
-    const error = new Error(data.message || "사업자 상태조회에 실패했습니다.");
-    error.status = response.status;
+    const data = await response.json();
+
+    const business = data.data?.[0];
+
+    //비지니스상태 없으면 없는 사업자 처리
+    if (!business?.b_stt) {
+      throw new AppError(
+        404,
+        "등록되지 않은 사업자등록번호입니다.",
+        "BUSINESS_NOT_FOUND",
+      );
+    }
+
+    return business;
+  } catch (error) {
+    // try 안에서 이미 AppError로 변환한 에러는 그대로 다시 던진다.
+    if (error instanceof AppError) {
+      throw error;
+    }
+    //파싱실패
+    if (error instanceof SyntaxError) {
+      throw new AppError(
+        502,
+        "사업자 상태조회 서버의 응답이 올바르지 않습니다.",
+        "NTS_INVALID_RESPONSE",
+      );
+    }
+    //서버연결 실패
+    //fetch는 연결 실패하면 타입에러가 나도록 설계되어 있음
+    if (error instanceof TypeError) {
+      throw new AppError(
+        502,
+        "사업자 상태조회 서버에 연결할 수 없습니다.",
+        "NTS_CONNECTION_ERROR",
+      );
+    }
+
     throw error;
   }
-  const business = data.data?.[0];
-
-  // 국세청에 등록되지 않은 사업자번호
-  if (!business || !business.b_stt) {
-    const error = new Error("등록되지 않은 사업자등록번호입니다.");
-    error.status = 404;
-    throw error;
-  }
-
-  return business;
 }
 
 module.exports = {
