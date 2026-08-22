@@ -20,6 +20,19 @@ export default function EstimateForm() {
   const [customer, setCustomer] = useState("");
 
   const hasDiscount = items.some((item) => item.discountRate > 0);
+  const hasTitle = title.trim().length > 0;
+  const hasCustomer = customer.trim().length > 0;
+  const hasValidItems =
+    items.length > 0 &&
+    items.every(
+      (item) =>
+        item.description.trim().length > 0 &&
+        item.quantity > 0 &&
+        item.unitPrice > 0,
+    );
+
+  const canCreateEstimate = hasTitle && hasCustomer && hasValidItems;
+
   const { mutate: createEstimate } = useCreateEstimate();
 
   const router = useRouter();
@@ -64,6 +77,7 @@ export default function EstimateForm() {
         onClick={handleCreateEstimate}
         children="견적서 생성하기"
         className="w-full text-lg mb-8"
+        disabled={!canCreateEstimate}
       />
     </div>
   );
