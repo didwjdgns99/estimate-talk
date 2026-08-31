@@ -20,6 +20,11 @@ export interface CreateCompanyInfo extends CompanyInfo {
   stamp?: File | null;
 }
 
+export interface CompanyInfoResponse extends CompanyInfo {
+  stampKey?: string;
+  stampUrl?: string;
+}
+
 export function createCompanyInfo(formData: FormData) {
   const result = http(
     "/api/info",

@@ -27,3 +27,25 @@ export async function createEstimateApi(data: CreateEstimateRequest) {
     },
   );
 }
+
+export async function getEstimateDetail(estimateId: string) {
+  return http(
+    `/api/estimate/${estimateId}`,
+    {
+      method: "GET",
+    },
+    { authRequired: true },
+  );
+}
+
+export async function getEstimateApi() {
+  return http(
+    "/api/estimate",
+    {
+      method: "GET",
+    },
+    {
+      authRequired: true,
+    },
+  );
+}

@@ -60,10 +60,14 @@ export default function EstimateSummary({
             </div>
           )}
         </div>
+
         <div className="flex justify-between">
           <span className="font-bold text-lg">최종 금액</span>
           <span className="font-bold text-2xl text-primary">
-            {includesTax.toLocaleString()} 원
+            {taxType === "taxable"
+              ? includesTax.toLocaleString()
+              : totalOriginalPrice.toLocaleString()}{" "}
+            원
           </span>
         </div>
       </section>
