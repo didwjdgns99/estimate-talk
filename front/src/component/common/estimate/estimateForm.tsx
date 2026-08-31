@@ -47,7 +47,7 @@ export default function EstimateForm() {
       },
       {
         onSuccess: (result) => {
-          router.push(`/estimate/${result.data.estimateId}`);
+          router.push(`/estimateDetail/${result.data.estimateId}`);
         },
         onError: (error) => {
           console.error(error);

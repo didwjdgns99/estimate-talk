@@ -7,33 +7,57 @@ import Image from "next/image";
 import BotCard from "@/component/common/botcard/BotCard";
 import Link from "next/link";
 import { getMeAction } from "../action/getMe.action";
+import { getEstimateAction } from "@/app/action/estimate.action";
+import { EstimateItem } from "@/apis/Esimate";
 
-const estimateList = [
-  {
-    id: 1,
-    companyName: "주식회사 ABC",
-    title: "홈페이지 제작 견적서",
-    price: "1,200만원",
-    date: "2026.06.13",
-  },
-  {
-    id: 2,
-    companyName: "홍길동 컴퍼니",
-    title: "쇼핑몰 구축 견적서",
-    price: "2,800만원",
-    date: "2026.06.10",
-  },
-  {
-    id: 3,
-    companyName: "테스트 상사",
-    title: "랜딩페이지 제작 견적서",
-    price: "800만원",
-    date: "2026.06.01",
-  },
-];
+type Estimate = {
+  _id: string;
+  title: string;
+  customer: string;
+  taxType: "taxable" | "taxFree";
+  items: EstimateItem[];
+  createdAt: string;
+};
 
 export default async function Home() {
-  const user = await getMeAction();
+  const result = await getMeAction();
+
+  const user = result?.user;
+  const estimateResult = user ? await getEstimateAction() : null;
+
+  const estimateList: Estimate[] = estimateResult?.data?.estimateList ?? [];
+  console.log("에스티메이트리스트", estimateList);
+
+  const estimateLength = estimateList.length;
+
+  const now = new Date();
+
+  const thisMonthEstimateList = estimateList.filter((estimate) => {
+    const createdAt = new Date(estimate.createdAt);
+
+    return (
+      createdAt.getFullYear() === now.getFullYear() &&
+      createdAt.getMonth() === now.getMonth()
+    );
+  });
+
+  const recentEstimate = estimateList[0];
+
+  const recentPrice = recentEstimate
+    ? recentEstimate.items.reduce((sum, item) => {
+        const itemPrice = item.quantity * item.unitPrice;
+        const discountPrice = itemPrice * (item.discountRate / 100);
+        const afterDiscountPrice = itemPrice - discountPrice;
+
+        const vat =
+          recentEstimate.taxType === "taxable" ? afterDiscountPrice * 0.1 : 0;
+
+        return sum + afterDiscountPrice + vat;
+      }, 0)
+    : 0;
+
+  const thisMonthEstimateLength = thisMonthEstimateList.length;
+
   return (
     <main className="min-h-screen bg-background text-main-text">
       <section className="mx-auto max-w-6xl px-6 py-10">
@@ -46,19 +70,19 @@ export default async function Home() {
         <TopCard
           className="flex-1"
           title="전체 견적서"
-          value="3"
+          value={estimateLength}
           icon={<FileText className="text-primary" size={22} />}
         />
         <TopCard
           className="flex-1"
           title="이번달"
-          value="2"
+          value={thisMonthEstimateLength}
           icon={<Calendar className="text-primary" size={22} />}
         />
         <TopCard
           className="flex-1"
-          title="이번달 금액"
-          value="4,800만원"
+          title="최근 견적 금액"
+          value={`${recentPrice.toLocaleString()}원`}
           icon={<TrendingUp className="text-primary" size={22} />}
         />
       </section>
@@ -87,15 +111,35 @@ export default async function Home() {
             </Link>
           </div>
           <div className="flex flex-col gap-4">
-            {estimateList.map((estimate) => (
-              <BotCard
-                key={estimate.id}
-                estimateCompany={estimate.companyName}
-                estimateTitle={estimate.title}
-                estimagePrice={estimate.price}
-                estimateDate={estimate.date}
-              />
-            ))}
+            {estimateList.map((estimate) => {
+              const supplyPrice = estimate.items.reduce((sum, item) => {
+                return sum + item.quantity * item.unitPrice;
+              }, 0);
+
+              const discountPrice = estimate.items.reduce((sum, item) => {
+                const itemPrice = item.quantity * item.unitPrice;
+                return sum + itemPrice * (item.discountRate / 100);
+              }, 0);
+
+              const afterDiscountPrice = supplyPrice - discountPrice;
+
+              const vat =
+                estimate.taxType === "taxable" ? afterDiscountPrice * 0.1 : 0;
+
+              const totalPrice = afterDiscountPrice + vat;
+
+              return (
+                <BotCard
+                  key={estimate._id}
+                  estimateCompany={estimate.customer}
+                  estimateTitle={estimate.title}
+                  estimagePrice={`${totalPrice.toLocaleString()}원`}
+                  estimateDate={new Date(estimate.createdAt).toLocaleDateString(
+                    "ko-KR",
+                  )}
+                />
+              );
+            })}
           </div>
         </div>
       </section>
