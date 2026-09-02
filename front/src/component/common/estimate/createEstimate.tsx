@@ -6,6 +6,8 @@ import {
   EstimateItem,
   createEmptyItem,
 } from "@/component/common/estimate/estimateItem";
+import Image from "next/image";
+import deleteIcon from "@/public/deleteIcon.svg";
 
 type ItemType = "description" | "quantity" | "unitPrice";
 
@@ -88,6 +90,10 @@ export default function CreateEstimate({
     handleDiscountChange(itemId, safeValue === "" ? 0 : Number(onlyNumber));
   };
 
+  const onClickDeleteItem = (itemId: string, index: number) => {
+    setItems((prev) => prev.filter((item) => item.id !== itemId));
+  };
+
   return (
     <section className="w-full rounded-2xl border border-border bg-white p-5">
       <div className="flex justify-between">
@@ -103,7 +109,7 @@ export default function CreateEstimate({
       </div>
 
       <div>
-        {items.map((item) => {
+        {items.map((item, index) => {
           const originalPrice = item.quantity * item.unitPrice;
 
           const discountPrice = originalPrice * (item.discountRate / 100);
@@ -115,9 +121,10 @@ export default function CreateEstimate({
           return (
             <div
               key={item.id}
-              className="mt-4 grid grid-cols-[2.5fr_0.7fr_1.5fr_120px] items-end gap-4"
+              className="mt-4 md:grid grid-cols-[2.5fr_0.7fr_1.5fr_150px] items-end gap-4"
             >
               <Input
+                className="mb-2 md:mb-0"
                 label="품목/내용"
                 value={item.description}
                 placeholder="품목/내용을 입력하세요"
@@ -125,6 +132,7 @@ export default function CreateEstimate({
               />
 
               <Input
+                className="mb-2 md:mb-0"
                 label="수량"
                 type="number"
                 value={item.quantity}
@@ -139,17 +147,26 @@ export default function CreateEstimate({
                 placeholder="단가를 입력하세요"
                 onChange={(e) => onChangeItem(e, item.id, "unitPrice")}
               />
+              <div className="flex gap-4 my-2 md:my-0">
+                <div className="flex flex-col">
+                  {item.discountRate > 0 && (
+                    <span className="text-xs text-gray-400 line-through">
+                      {originalPrice.toLocaleString()}원
+                    </span>
+                  )}
 
-              <div className="flex flex-col">
-                {item.discountRate > 0 && (
-                  <span className="text-xs text-gray-400 line-through">
-                    {originalPrice.toLocaleString()}원
+                  <span className="font-semibold">
+                    {totalPrice.toLocaleString()}원
                   </span>
+                </div>
+                {index > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => onClickDeleteItem(item.id, index)}
+                  >
+                    <Image src={deleteIcon} alt="삭제" width={24} height={24} />
+                  </button>
                 )}
-
-                <span className="font-semibold">
-                  {totalPrice.toLocaleString()}원
-                </span>
               </div>
 
               <div className="col-span-4">
@@ -174,7 +191,13 @@ export default function CreateEstimate({
                         <button
                           key={rate}
                           type="button"
-                          onClick={() => handleDiscountChange(item.id, rate)}
+                          onClick={() => {
+                            handleDiscountChange(item.id, rate);
+                            setCustomDiscounts((prev) => ({
+                              ...prev,
+                              [item.id]: "",
+                            }));
+                          }}
                           className={`rounded-xl border px-3 py-2 text-sm ${
                             item.discountRate === rate
                               ? "border-primary bg-primary text-white"

@@ -4,7 +4,7 @@ type CustomerProps = {
   createdAt: string;
 };
 
-export default function customorDetail({
+export default function CustomerDetail({
   taxType,
   customer,
   createdAt,

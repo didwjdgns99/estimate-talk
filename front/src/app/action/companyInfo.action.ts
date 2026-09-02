@@ -57,9 +57,13 @@ export async function checkBusinessStatusAction(businessNumber: string) {
     };
   } catch (error) {
     console.error("사업자 상태조회 에러:", error);
-    if (error instanceof ApiError) {
-      throw new Error(error.message);
-    }
-    throw new Error("알 수 없는 오류가 발생했습니다.");
+    return {
+      isError: true,
+      message:
+        error instanceof Error
+          ? error.message
+          : "사업자 정보를 조회하지 못했습니다.",
+      data: null,
+    };
   }
 }

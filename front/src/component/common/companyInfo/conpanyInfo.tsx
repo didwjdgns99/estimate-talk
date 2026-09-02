@@ -49,7 +49,7 @@ export default function CompanyInfo() {
 
   const [stampFile, setStampFile] = useState<File | null>(null);
   const [stampPreview, setStampPreview] = useState<string | null>(null);
-  const [isSuceessBusinessStatus, setIsSuccessBusinessStatus] = useState(false);
+  const [isSuccessBusinessStatus, setIsSuccessBusinessStatus] = useState(false);
   const [businessStatus, setBusinessStatus] = useState("");
 
   const { mutate, isPending } = useCreateCompanyInfo();
@@ -121,12 +121,17 @@ export default function CompanyInfo() {
     }
     checkBusinessStatus(form.businessNumber, {
       onSuccess: (data) => {
+        if (data.isError) {
+          setIsSuccessBusinessStatus(false);
+          setBusinessStatus(data.message);
+          return;
+        }
+
         const business = data.data.data.b_stt;
         setIsSuccessBusinessStatus(true);
         setBusinessStatus(business);
       },
       onError: (error) => {
-        alert(error.message);
         setBusinessStatus("");
       },
     });
@@ -135,6 +140,7 @@ export default function CompanyInfo() {
   const open = useDaumPostcodePopup();
 
   const isCompanyNameValid = form.companyName.trim() !== "";
+  const isBusinessNumberStatusValid = isSuccessBusinessStatus;
   const isBusinessNumberValid = /^[0-9]{10}$/.test(
     form.businessNumber.replaceAll("-", ""),
   ); //사업자에서 하이픈을 빈 문자열로 바꿔라
@@ -144,6 +150,7 @@ export default function CompanyInfo() {
   const isManagerValid = form.manager.trim() !== "";
   const isPhoneValid = /^[0-9]+$/.test(form.phone.replaceAll("-", "")); //+를 넣으면 0-9다음으로 1개 이상 있어야 한다 즉 없으면 안된다.
   const isMobileValid = /^[0-9]+$/.test(form.mobile.replaceAll("-", ""));
+
   //이메일검사
   //대소문자+숫자+일부 특수문자 사용 + @ + 도메인에 (대소문자,숫자, .- 만 가능) + \.(온점 확인) 최소 2글자 이상 대소문자 가능
   const isEmailValid = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(
@@ -151,9 +158,10 @@ export default function CompanyInfo() {
   );
 
   const isDetailAddressValid = form.detailAddress.trim() !== "";
-
+  const isStampValid = !!stampFile || !!stampPreview;
   const isFormValid =
     isCompanyNameValid &&
+    isBusinessNumberStatusValid &&
     isBusinessNumberValid &&
     isCeoNameValid &&
     isBusinessTypeValid &&
@@ -162,7 +170,8 @@ export default function CompanyInfo() {
     isPhoneValid &&
     isMobileValid &&
     isEmailValid &&
-    isDetailAddressValid;
+    isDetailAddressValid &&
+    isStampValid;
 
   const handleAddressSearch = () => {
     open({
@@ -193,6 +202,15 @@ export default function CompanyInfo() {
     setStampPreview(URL.createObjectURL(file));
   };
 
+  const onlyNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length > 10) return;
+
+    setForm({ ...form, [e.target.name]: value });
+    setIsSuccessBusinessStatus(false);
+    setBusinessStatus("");
+  };
+
   if (isLoading) return <div>회사정보를 불러오는 중입니다.</div>;
   if (isError) return <div>회사정보를 불러오는 중에 오류가 발생했습니다.</div>;
 
@@ -213,25 +231,27 @@ export default function CompanyInfo() {
                 : ""
             }
           />
-          <div className="flex items-end gap-2">
+          <div className="flex items-start gap-2">
             <div className="flex-1">
               <Input
+                onChange={onlyNumber}
                 label={
                   <div className="flex items-center gap-2">
                     <span>사업자번호 *</span>
 
-                    {isSuceessBusinessStatus && (
+                    {isSuccessBusinessStatus ? (
                       <span className="text-xs font-normal text-primary">
                         ✓ {businessStatus}로 조회되었습니다.
+                      </span>
+                    ) : (
+                      <span className="text-xs font-normal text-red-500">
+                        ✕ 조회되지 않은 사업자입니다.
                       </span>
                     )}
                   </div>
                 }
                 placeholder="123-45-67890"
                 value={form.businessNumber}
-                onChange={(e) =>
-                  setForm({ ...form, businessNumber: e.target.value })
-                }
                 name="businessNumber"
                 onBlur={handleBlur}
                 errorMessage={
@@ -247,6 +267,7 @@ export default function CompanyInfo() {
               disabled={!isBusinessNumberValid}
               onClick={() => handleCheckBusinessStatus()}
               className="
+              mt-7
       h-12
       shrink-0
       rounded-lg
@@ -449,26 +470,26 @@ export default function CompanyInfo() {
             회사 직인
           </label>
 
-           <div className="flex items-center gap-3">
-    <label
-      htmlFor="stamp"
-      className="shrink-0 cursor-pointer rounded-lg border border-primary px-4 py-3 text-sm font-medium text-primary transition hover:bg-blue-50"
-    >
-      파일 선택
-    </label>
+          <div className="flex items-center gap-3">
+            <label
+              htmlFor="stamp"
+              className="shrink-0 cursor-pointer rounded-lg border border-primary px-4 py-3 text-sm font-medium text-primary transition hover:bg-blue-50"
+            >
+              파일 선택
+            </label>
 
-    <span className="min-w-0 truncate text-sm text-secondary-text">
-      {stampFile ? stampFile.name : "선택된 파일이 없습니다."}
-    </span>
+            <span className="min-w-0 truncate text-sm text-secondary-text">
+              {stampFile ? stampFile.name : "선택된 파일이 없습니다."}
+            </span>
 
-    <input
-      id="stamp"
-      type="file"
-      accept="image/*"
-      onChange={handleStampChange}
-      className="hidden"
-    />
-  </div>
+            <input
+              id="stamp"
+              type="file"
+              accept="image/*"
+              onChange={handleStampChange}
+              className="hidden"
+            />
+          </div>
 
           {stampPreview && (
             <div className="mt-4">

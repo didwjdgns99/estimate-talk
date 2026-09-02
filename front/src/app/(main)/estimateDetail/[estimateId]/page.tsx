@@ -7,6 +7,8 @@ import { useGetEstimateDetail } from "@/app/hook/estimate/useGetEstimateDetail";
 import EstimateDetailSummery from "@/app/(main)/estimateDetail/[estimateId]/estimateDetailSummery";
 import EstimateCompany from "./estimateCompany";
 
+export type taxType = "taxable" | "taxFree";
+
 export default function EstimateDetail() {
   const params = useParams<{ estimateId: string }>();
   const { data, isLoading, isError } = useGetEstimateDetail(params.estimateId);
