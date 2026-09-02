@@ -1,5 +1,3 @@
-import { TaxType } from "./customorDetail";
-
 type EstimateItem = {
   _id: string;
   description: string;
@@ -8,9 +6,10 @@ type EstimateItem = {
   discountRate: number;
 };
 
-interface EstimateProps extends TaxType {
+type EstimateProps = {
   items: EstimateItem[];
-}
+  taxType: "taxable" | "taxFree";
+};
 
 export default function EstimateDetailSummery({
   items,

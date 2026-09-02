@@ -23,6 +23,7 @@ export default function EstimateSummary({
   const afterDiscountPrice = totalOriginalPrice - totalDiscount;
 
   const includesTax = afterDiscountPrice * 1.1; // 부가세 10% 계산
+  const vat = afterDiscountPrice * 0.1; // 부가세 10% 계산
   return (
     console.log("items목록", items),
     (
@@ -54,9 +55,7 @@ export default function EstimateSummary({
               <span className="text-muted-foreground text-sm">
                 부가세 (VAT 10%)
               </span>
-              <span className="text-primary">
-                {includesTax.toLocaleString()} 원
-              </span>
+              <span className="text-primary">{vat.toLocaleString()} 원</span>
             </div>
           )}
         </div>

@@ -68,11 +68,12 @@ export async function http(
 
     return await res.json();
   } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") {
-      throw new ApiError(408, "요청시간이 초과했습니다.");
-    }
     if (error instanceof ApiError) {
       throw error;
+    }
+
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiError(408, "요청시간이 초과했습니다.");
     }
 
     throw new ApiError(500, "알수없는 오류가 발생했습니다.");
