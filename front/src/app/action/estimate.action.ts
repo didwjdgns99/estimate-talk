@@ -36,9 +36,13 @@ export async function getEstimateDetailAction(estimateId: string) {
   };
 }
 
-export async function getEstimateAction() {
+export async function getEstimateAction(
+  page = 1,
+  limit = 3,
+  searchKeyword: string = "",
+) {
   try {
-    const result = await getEstimateApi();
+    const result = await getEstimateApi(page, limit, searchKeyword);
     return {
       isError: false,
       message: result.message,

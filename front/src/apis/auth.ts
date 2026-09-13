@@ -46,3 +46,10 @@ export async function getMe(token?: string) {
       : undefined,
   });
 }
+
+export async function logout() {
+  const result = http("/api/auth/logout", {
+    method: "POST",
+  });
+  return result;
+}

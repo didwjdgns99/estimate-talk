@@ -1,14 +1,9 @@
 import TopCard from "@/component/common/topcard/TopCard";
 import { FileText, Calendar, TrendingUp } from "lucide-react";
-import Input from "@/component/common/Input";
-import Button from "@/component/common/button/button";
-import search from "@/public/search.svg";
-import Image from "next/image";
-import BotCard from "@/component/common/botcard/BotCard";
-import Link from "next/link";
 import { getMeAction } from "../action/getMe.action";
 import { getEstimateAction } from "@/app/action/estimate.action";
 import { EstimateItem } from "@/apis/Esimate";
+import EstimateSection from "@/component/common/estimateSection/page";
 
 type Estimate = {
   _id: string;
@@ -23,7 +18,7 @@ export default async function Home() {
   const result = await getMeAction();
 
   const user = result?.user;
-  const estimateResult = user ? await getEstimateAction() : null;
+  const estimateResult = user ? await getEstimateAction(1, 3) : null;
 
   const estimateList: Estimate[] = estimateResult?.data?.estimateList ?? [];
   console.log("에스티메이트리스트", estimateList);
@@ -88,59 +83,7 @@ export default async function Home() {
       </section>
       <section className="mx-auto max-w-6xl px-6">
         <div className="rounded-lg bg-white p-6 shadow">
-          <div className="flex w-full gap-4 mb-4">
-            <div className="relative flex-1">
-              <Image
-                src={search}
-                alt="검색 아이콘"
-                width={25}
-                height={25}
-                className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2"
-              />
-
-              <Input
-                className="pl-14 text-lg"
-                placeholder="상호명으로 검색..."
-              />
-            </div>
-            <Link href={user ? "/estimate" : "/login"}>
-              <Button className="flex items-center gap-2">
-                <span className="text-2xl">+</span>
-                <span className="text-lg">새 견적서 만들기</span>
-              </Button>
-            </Link>
-          </div>
-          <div className="flex flex-col gap-4">
-            {estimateList.map((estimate) => {
-              const supplyPrice = estimate.items.reduce((sum, item) => {
-                return sum + item.quantity * item.unitPrice;
-              }, 0);
-
-              const discountPrice = estimate.items.reduce((sum, item) => {
-                const itemPrice = item.quantity * item.unitPrice;
-                return sum + itemPrice * (item.discountRate / 100);
-              }, 0);
-
-              const afterDiscountPrice = supplyPrice - discountPrice;
-
-              const vat =
-                estimate.taxType === "taxable" ? afterDiscountPrice * 0.1 : 0;
-
-              const totalPrice = afterDiscountPrice + vat;
-
-              return (
-                <BotCard
-                  key={estimate._id}
-                  estimateCompany={estimate.customer}
-                  estimateTitle={estimate.title}
-                  estimagePrice={`${totalPrice.toLocaleString()}원`}
-                  estimateDate={new Date(estimate.createdAt).toLocaleDateString(
-                    "ko-KR",
-                  )}
-                />
-              );
-            })}
-          </div>
+          <EstimateSection user={user} estimateList={estimateList} />
         </div>
       </section>
     </main>

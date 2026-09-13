@@ -29,8 +29,32 @@ async function getEstimateService(userId, estimateId) {
   return estimate;
 }
 
-async function getEstimateListService(userId) {
-  return Estimate.find({ userId }).sort({ createdAt: -1 }).lean();
+async function getEstimateListService(userId, { page, limit, searchKeyword }) {
+  const skip = (page - 1) * limit;
+  const filter = {
+    userId,
+  };
+  if (searchKeyword) {
+    filter.$or = [
+      {
+        customer: {
+          $regex: searchKeyword,
+          $options: "i",
+        },
+      },
+      {
+        title: {
+          $regex: searchKeyword,
+          $options: "i",
+        },
+      },
+    ];
+  }
+  return Estimate.find(filter)
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean(); //데이터수정이 아닌 조회용 몽고디비로부터 객체로 받기
 }
 
 module.exports = {
