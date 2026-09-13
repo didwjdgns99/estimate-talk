@@ -28,7 +28,7 @@ export default function Header() {
     router.refresh();
   };
   return (
-    <div className="w-full border-b border-gray-200 bg-white mb-10">
+    <div className="w-full border-b border-gray-200 bg-white mb-10 print:hidden">
       <div className="flex justify-between items-center px-4 py-2 mx-auto max-w-6xl">
         <Link href="/">
           <Image src={Logo} alt="로고 이미지" width={120} height={60} />

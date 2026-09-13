@@ -5,6 +5,18 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@page {
+  size: A4 portrait;
+  margin: 8mm;
+}
+
+@media print {
+  body {
+    margin: 0;
+    background: white;
+  }
+}
+
 @theme {
   --font-sans: "Pretendard", ui-sans-serif, system-ui, sans-serif;
 }

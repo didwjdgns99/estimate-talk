@@ -30,11 +30,20 @@ export default function EstimateDetail() {
   }
 
   return (
-    <section className="max-w-5xl mx-auto flex flex-col rounded-2xl overflow-hidden bg-white shadow-lg mb-10">
-      <div className="bg-primary/15 flex justify-center w-full py-10 ">
-        <h2 className="text-4xl font-bold text-black/70">견 적 서</h2>
+    <section
+      id="estimate-document"
+      className="max-w-5xl mx-auto flex flex-col rounded-2xl overflow-hidden bg-white shadow-lg mb-10 print:max-w-none
+    print:w-full
+    print:rounded-none
+    print:shadow-none
+    print:mb-0"
+    >
+      <div className="bg-blue-100 flex justify-center w-full py-10 print:py-5">
+        <h2 className="text-4xl font-bold text-black/70 print:text-3xl">
+          견 적 서
+        </h2>
       </div>
-      <div className="px-8">
+      <div className="px-8 print:px-4">
         <CustomorDetail
           taxType={taxType}
           customer={customer}

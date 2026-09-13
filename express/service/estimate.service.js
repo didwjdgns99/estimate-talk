@@ -35,6 +35,7 @@ async function getEstimateListService(userId, { page, limit, searchKeyword }) {
     userId,
   };
   if (searchKeyword) {
+    //$or 조건 1,조건2중 하나라도 맞으면 검색결과에 포함되도록
     filter.$or = [
       {
         customer: {

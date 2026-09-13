@@ -13,7 +13,7 @@ export default async function MainLayout({
 
   return (
     <UserProvider user={user}>
-      <Header/>
+      <Header />
       <main>{children}</main>
     </UserProvider>
   );
