@@ -38,9 +38,13 @@ export async function getEstimateDetail(estimateId: string) {
   );
 }
 
-export async function getEstimateApi() {
+export async function getEstimateApi(
+  page = 1,
+  limit = 3,
+  searchKeyword: string = "",
+) {
   return http(
-    "/api/estimate",
+    `/api/estimate?page=${page}&limit=${limit}&searchKeyword=${searchKeyword}`,
     {
       method: "GET",
     },

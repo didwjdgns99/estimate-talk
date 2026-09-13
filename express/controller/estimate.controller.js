@@ -43,7 +43,15 @@ async function getEstimateController(req, res, next) {
 async function getEstimateListController(req, res, next) {
   try {
     const userId = req.user.id;
-    const estimateList = await getEstimateListService(userId);
+
+    const page = Number(req.query.page) || 1; //문자열로 들어와서 number
+    const limit = Number(req.query.limit) || 3;
+    const searchKeyword = req.query.searchKeyword || "";
+    const estimateList = await getEstimateListService(userId, {
+      page,
+      limit,
+      searchKeyword,
+    });
 
     return res.status(200).json({
       message: "견적서 조회 성공",

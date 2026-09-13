@@ -1,3 +1,5 @@
+import EstimateDetailButton from "@/app/(main)/estimateDetail/[estimateId]/EstimateDetailButton";
+
 export type EstimateItem = {
   _id: string;
   description: string;
@@ -14,16 +16,21 @@ type EstimateProps = {
 export default function EstimateContent({ items, taxType }: EstimateProps) {
   return (
     <section>
-      <div className="mb-10 flex justify-between border-b border-foreground items-end">
-        <span className="mb-4">견적 내역</span>
+      <div className="mb-10  border-b border-foreground items-end">
+        <div className="flex justify-between">
+          <span className="mb-4">견적 내역</span>
 
-        <span className="mb-4 text-sm md:text-[16px]">
-          {taxType === "taxable"
-            ? "* 할인이 적용된 항목이 있습니다"
-            : "할인 적용이 없는 견적서 입니다"}
-        </span>
+          <span className="mb-4 text-sm md:text-[16px]">
+            {taxType === "taxable"
+              ? "* 할인이 적용된 항목이 있습니다"
+              : "할인 적용이 없는 견적서 입니다"}
+          </span>
+        </div>
+        <div className="flex justify-end">
+          <EstimateDetailButton />
+        </div>
       </div>
-
+      <div></div>
       <div className="w-full">
         {/* 451px 이상 header */}
         <div className="grid grid-cols-[2fr_0.5fr_1fr_0.7fr_1fr] border-b border-gray-200 pb-3 text-sm text-gray-500 max-[450px]:hidden">

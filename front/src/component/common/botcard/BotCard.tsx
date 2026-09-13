@@ -6,6 +6,7 @@ type BotCardProps = {
   estimateDate: string;
   estimagePrice: string;
   className?: string;
+  onClick?: () => void;
 };
 
 export default function BotCard({
@@ -14,9 +15,11 @@ export default function BotCard({
   estimateDate,
   estimagePrice,
   className,
+  onClick,
 }: BotCardProps) {
   return (
     <div
+      onClick={onClick}
       className={cn(
         "flex justify-between items-center px-4 py-6 bg-white rounded-lg shadow border border-gray-200 cursor-pointer hover:border-primary transition",
         className,

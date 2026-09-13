@@ -1,9 +1,11 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import Logo from "@/public/LOGO_2.png";
 import Link from "next/link";
-import {useUser} from "@/context/userContext"
+import { useUser } from "@/context/userContext";
+import logoutAction from "@/app/action/logout.action";
+import { useRouter } from "next/navigation";
 
 export type User = {
   id: string;
@@ -16,11 +18,17 @@ export type UserProps = {
 };
 
 export default function Header() {
+  const { user } = useUser();
+  const router = useRouter();
+  const handleLogout = async () => {
+    const result = await logoutAction();
+    if (result?.isError) return;
 
- const { user } = useUser();
-
+    router.push("/");
+    router.refresh();
+  };
   return (
-    <div className="w-full border-b border-gray-200 bg-white mb-10">
+    <div className="w-full border-b border-gray-200 bg-white mb-10 print:hidden">
       <div className="flex justify-between items-center px-4 py-2 mx-auto max-w-6xl">
         <Link href="/">
           <Image src={Logo} alt="로고 이미지" width={120} height={60} />
@@ -39,7 +47,10 @@ export default function Header() {
                 <span className="text-primary">{user.name}님</span> 반갑습니다
               </span>
 
-              <button className="cursor-pointer hover:text-primary transition text-sm sm:text-[16px]">
+              <button
+                onClick={handleLogout}
+                className="cursor-pointer hover:text-primary transition text-sm sm:text-[16px]"
+              >
                 로그아웃
               </button>
             </>
