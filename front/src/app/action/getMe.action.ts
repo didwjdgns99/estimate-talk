@@ -42,14 +42,13 @@
 
 "use server";
 
-import { cookies } from "next/headers";
 import { getMe } from "@/apis/auth";
+import { getAuthToken } from "@/lib/getCookies";
 import { ApiError } from "@/lib/http";
 
 export async function getMeAction() {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get("token")?.value;
+    const token = await getAuthToken();
 
     if (!token) {
       return {

@@ -41,16 +41,6 @@ export default function EstimateList({
   // 검색어가 변경되면 1페이지부터 다시 조회
   const isFirstRender = useRef(true);
   const loadingRef = useRef(false);
-  const hasMoreRef = useRef(hasMore);
-  const pageRef = useRef(page);
-
-  useEffect(() => {
-    hasMoreRef.current = hasMore;
-  }, [hasMore]);
-
-  useEffect(() => {
-    pageRef.current = page;
-  }, [page]);
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -97,13 +87,14 @@ export default function EstimateList({
     const observer = new IntersectionObserver(
       async ([entry]) => {
         if (!entry.isIntersecting) return;
-        if (loadingRef.current || !hasMoreRef.current) return;
-
-        const nextPage = pageRef.current + 1;
+        if (loadingRef.current) return;
+        if (!hasMore) return;
 
         try {
           loadingRef.current = true;
           setIsLoading(true);
+
+          const nextPage = page + 1;
 
           const result = await getEstimateAction(
             nextPage,
@@ -114,7 +105,6 @@ export default function EstimateList({
           const nextEstimateList = result?.data?.estimateList ?? [];
 
           if (nextEstimateList.length === 0) {
-            hasMoreRef.current = false;
             setHasMore(false);
             return;
           }
@@ -129,13 +119,12 @@ export default function EstimateList({
             );
           });
 
-          pageRef.current = nextPage;
           setPage(nextPage);
 
           // 3개보다 적게 왔다면 마지막 페이지
-          const hasNextPage = nextEstimateList.length === 3;
-          hasMoreRef.current = hasNextPage;
-          setHasMore(hasNextPage);
+          if (nextEstimateList.length < 3) {
+            setHasMore(false);
+          }
         } catch (error) {
           console.error("견적서 추가 조회 실패", error);
         } finally {
@@ -153,7 +142,7 @@ export default function EstimateList({
     observer.observe(target);
 
     return () => observer.disconnect();
-  }, [debouncedSearchKeyword]);
+  }, [page, hasMore, debouncedSearchKeyword]);
 
   if (!user) {
     return null;
