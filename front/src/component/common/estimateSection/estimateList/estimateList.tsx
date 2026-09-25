@@ -37,7 +37,7 @@ export default function EstimateList({
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const router = useRouter();
-
+  //  추후
   // 검색어가 변경되면 1페이지부터 다시 조회
   const isFirstRender = useRef(true);
   const loadingRef = useRef(false);
