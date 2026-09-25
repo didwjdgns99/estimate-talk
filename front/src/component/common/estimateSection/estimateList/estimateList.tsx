@@ -31,7 +31,7 @@ export default function EstimateList({
 }: EstimateListProps) {
   const [estimateList, setEstimateList] = useState(initialEstimateList);
   const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(initialEstimateList.length === 3);
   const [page, setPage] = useState(1);
 
   const bottomRef = useRef<HTMLDivElement | null>(null);
@@ -39,7 +39,13 @@ export default function EstimateList({
   const router = useRouter();
 
   // 검색어가 변경되면 1페이지부터 다시 조회
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
     const fetchSearchEstimate = async () => {
       try {
         setIsLoading(true);
@@ -129,7 +135,7 @@ export default function EstimateList({
     return () => {
       observer.disconnect();
     };
-  }, [page, isLoading, hasMore, debouncedSearchKeyword]);
+  }, [page, hasMore, debouncedSearchKeyword]);
 
   if (!user) {
     return null;
