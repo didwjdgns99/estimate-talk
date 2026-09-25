@@ -1,3 +1,5 @@
+"use server";
+
 import { getCompanyInfo } from "@/apis/companyInfo";
 import {
   createEstimateApi,
