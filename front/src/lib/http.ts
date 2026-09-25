@@ -28,8 +28,9 @@ export async function http(
 
   try {
     const cookie = config.authRequired ? await getAuthCookie() : undefined;
+    const authToken = cookie?.replace(/^token=/, "");
 
-    if (config.authRequired && !cookie) {
+    if (config.authRequired && !authToken) {
       throw new ApiError(401, "로그인이 필요합니다.");
     }
 
@@ -43,7 +44,12 @@ export async function http(
         ...(options.body && !isFormData
           ? { "Content-Type": "application/json" }
           : {}),
-        ...(config.authRequired && cookie ? { Cookie: cookie } : {}),
+        ...(config.authRequired && authToken
+          ? {
+              Cookie: `token=${authToken}`,
+              Authorization: `Bearer ${authToken}`,
+            }
+          : {}),
         ...options.headers,
       },
     });
