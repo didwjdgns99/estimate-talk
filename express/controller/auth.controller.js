@@ -24,14 +24,6 @@ async function loginController(req, res) {
 
     const { user, token } = await loginService({ email, password });
 
-    res.cookie("token", token, {
-      httpOnly: true, //JavaScript에서 쿠키 접근 불가
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax", //중간보안 간편로그인 허용
-      path: "/",
-      maxAge: 60 * 60 * 1000, //쿠키 유효시간
-    });
-
     return res.status(200).json({
       isError: false,
       message: "로그인 성공",
