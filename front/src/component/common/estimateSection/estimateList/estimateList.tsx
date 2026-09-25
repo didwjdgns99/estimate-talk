@@ -40,7 +40,7 @@ export default function EstimateList({
 
   // 검색어가 변경되면 1페이지부터 다시 조회
   const isFirstRender = useRef(true);
-
+  const loadingRef = useRef(false);
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -48,6 +48,7 @@ export default function EstimateList({
     }
     const fetchSearchEstimate = async () => {
       try {
+        loadingRef.current = true;
         setIsLoading(true);
 
         // 검색 결과는 항상 1페이지부터 시작
@@ -69,6 +70,7 @@ export default function EstimateList({
       } catch (error) {
         console.error("견적서 검색 실패", error);
       } finally {
+        loadingRef.current = false;
         setIsLoading(false);
       }
     };
@@ -77,21 +79,21 @@ export default function EstimateList({
   }, [debouncedSearchKeyword]);
 
   useEffect(() => {
-    const root = scrollRef.current; // 스크롤 컨테이너를 root로 설정
-    const target = bottomRef.current; // 감시할 요소를 target으로 설정
+    const root = scrollRef.current;
+    const target = bottomRef.current;
 
     if (!root || !target) return;
 
     const observer = new IntersectionObserver(
-      async (entries) => {
-        const entry = entries[0];
-
-        if (!entry.isIntersecting) return; //target이 보이지 않다면 호출 x
-        if (isLoading) return; // 이미 호출해서 로딩중이라면 중복호출 x
-        if (!hasMore) return; // 더이상 불러올 데이터가 없다면 호출 x
+      async ([entry]) => {
+        if (!entry.isIntersecting) return;
+        if (loadingRef.current) return;
+        if (!hasMore) return;
 
         try {
+          loadingRef.current = true;
           setIsLoading(true);
+
           const nextPage = page + 1;
 
           const result = await getEstimateAction(
@@ -116,25 +118,30 @@ export default function EstimateList({
               ).values(),
             );
           });
+
           setPage(nextPage);
+
+          // 3개보다 적게 왔다면 마지막 페이지
+          if (nextEstimateList.length < 3) {
+            setHasMore(false);
+          }
         } catch (error) {
           console.error("견적서 추가 조회 실패", error);
         } finally {
+          loadingRef.current = false;
           setIsLoading(false);
         }
       },
       {
-        root: root,
+        root,
         rootMargin: "100px",
-        threshold: 0, //아주 조금만 보여도 콜백 실행
+        threshold: 0,
       },
     );
 
     observer.observe(target);
 
-    return () => {
-      observer.disconnect();
-    };
+    return () => observer.disconnect();
   }, [page, hasMore, debouncedSearchKeyword]);
 
   if (!user) {
