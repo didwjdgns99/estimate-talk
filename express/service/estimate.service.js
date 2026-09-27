@@ -51,11 +51,34 @@ async function getEstimateListService(userId, { page, limit, searchKeyword }) {
       },
     ];
   }
-  return Estimate.find(filter)
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean(); //데이터수정이 아닌 조회용 몽고디비로부터 객체로 받기
+
+  const now = new Date();
+
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+  const [estimateList, totalCount, thisMonthCount] = await Promise.all([
+    Estimate.find(filter)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+
+    Estimate.countDocuments(filter),
+    Estimate.countDocuments({
+      userId,
+      createdAt: {
+        $gte: startOfMonth,
+        $lt: startOfNextMonth,
+      },
+    }),
+  ]);
+  return {
+    estimateList,
+    totalCount,
+    thisMonthCount,
+  };
 }
 
 module.exports = {
