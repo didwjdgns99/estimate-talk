@@ -49,6 +49,7 @@ export default function CompanyInfo() {
 
   const [stampFile, setStampFile] = useState<File | null>(null);
   const [stampPreview, setStampPreview] = useState<string | null>(null);
+  const [isCheckedBusinessStatus, setIsCheckedBusinessStatus] = useState(false);
   const [isSuccessBusinessStatus, setIsSuccessBusinessStatus] = useState(false);
   const [businessStatus, setBusinessStatus] = useState("");
 
@@ -121,6 +122,7 @@ export default function CompanyInfo() {
     }
     checkBusinessStatus(form.businessNumber, {
       onSuccess: (data) => {
+        setIsCheckedBusinessStatus(true);
         if (data.isError) {
           setIsSuccessBusinessStatus(false);
           setBusinessStatus(data.message);
@@ -239,15 +241,16 @@ export default function CompanyInfo() {
                   <div className="flex items-center gap-2">
                     <span>사업자번호 *</span>
 
-                    {isSuccessBusinessStatus ? (
-                      <span className="text-xs font-normal text-primary">
-                        ✓ {businessStatus}로 조회되었습니다.
-                      </span>
-                    ) : (
-                      <span className="text-xs font-normal text-red-500">
-                        ✕ 조회되지 않은 사업자입니다.
-                      </span>
-                    )}
+                    {isCheckedBusinessStatus &&
+                      (isSuccessBusinessStatus ? (
+                        <span className="text-xs font-normal text-primary">
+                          ✓ {businessStatus}로 조회되었습니다.
+                        </span>
+                      ) : (
+                        <span className="text-xs font-normal text-red-500">
+                          ✕ 조회되지 않은 사업자입니다.
+                        </span>
+                      ))}
                   </div>
                 }
                 placeholder="123-45-67890"

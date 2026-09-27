@@ -31,32 +31,38 @@ export default function Header() {
     <div className="w-full border-b border-gray-200 bg-white mb-10 print:hidden">
       <div className="flex justify-between items-center px-4 py-2 mx-auto max-w-6xl">
         <Link href="/">
-          <Image src={Logo} alt="로고 이미지" width={120} height={60} />
+          <Image
+            src={Logo}
+            alt="로고 이미지"
+            width={120}
+            height={60}
+            className="w-22.5 sm:w-30 h-auto"
+          />
         </Link>
 
         <div className="flex gap-6 items-center">
           <Link href={user ? "/info" : "/login"}>
-            <span className="cursor-pointer hover:text-primary transition text-sm sm:text-[16px]">
+            <span className="cursor-pointer hover:text-primary transition text-xs sm:text-[16px]">
               회사정보
             </span>
           </Link>
 
           {user ? (
             <>
-              <span className="text-main-text text-sm sm:text-[16px]">
+              <span className="text-main-text text-xs sm:text-[16px]">
                 <span className="text-primary">{user.name}님</span> 반갑습니다
               </span>
 
               <button
                 onClick={handleLogout}
-                className="cursor-pointer hover:text-primary transition text-sm sm:text-[16px]"
+                className="cursor-pointer hover:text-primary transition text-xs sm:text-[16px]"
               >
                 로그아웃
               </button>
             </>
           ) : (
             <Link href="/login">
-              <span className="cursor-pointer hover:text-primary transition text-sm sm:text-[16px]">
+              <span className="cursor-pointer hover:text-primary transition text-xs sm:text-[16px]">
                 로그인
               </span>
             </Link>

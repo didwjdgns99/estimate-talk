@@ -62,14 +62,14 @@ export default function EstimateDetailSummery({
         )}
 
         <div>
-          <div className="flex justify-between items-center">
-            <span className="text-lg">최종 금액</span>
+          <div className="flex justify-between items-start">
+            <span className="text-md md:text-lg">최종 금액</span>
             <div className="flex flex-col items-end">
               <span className="text-lg font-bold">
                 {" "}
                 {totalPrice.toLocaleString()}원
               </span>
-              <span className="text-gray-500 font-light">
+              <span className="text-xs text-gray-500 font-light md:text-md">
                 공급가 {afterDiscountPrice.toLocaleString()} + VAT{" "}
                 {vat.toLocaleString()}
               </span>

@@ -20,15 +20,20 @@ export default function EstimateSection({
   });
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex w-full gap-4 mb-4">
-        <EstimateSearch
-          searchKeyword={searchKeyword}
-          setSearchKeyword={setSearchKeyword}
-        />
-        <Link href={user ? "/estimate" : "/login"}>
-          <Button className="flex items-center gap-2">
-            <span className="text-2xl">+</span>
-            <span className="text-lg">새 견적서 만들기</span>
+      <div className="flex flex-col md:flex md:flex-row w-full gap-4 mb-4">
+        <div className="order-2 md:order-1 md:flex-1">
+          <EstimateSearch
+            searchKeyword={searchKeyword}
+            setSearchKeyword={setSearchKeyword}
+          />
+        </div>
+        <Link
+          href={user ? "/estimate" : "/login"}
+          className="order-1 md:order-2"
+        >
+          <Button className="w-full flex md:flex-1 items-center gap-2">
+            <span className="text-xl md:text-2xl">+</span>
+            <span className="text-sm md:text-lg">새 견적서 만들기</span>
           </Button>
         </Link>
       </div>
