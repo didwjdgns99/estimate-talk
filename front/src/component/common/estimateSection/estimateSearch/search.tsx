@@ -16,13 +16,13 @@ export default function EstimateSearch({
         alt="검색 아이콘"
         width={25}
         height={25}
-        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2"
+        className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 w-5 md:w-[25px] h-auto"
       />
 
       <Input
         value={searchKeyword}
         onChange={(e) => setSearchKeyword(e.target.value)}
-        className="pl-14 text-lg"
+        className="text-sm pl-14 md:text-lg"
         placeholder="상호명으로 검색..."
       />
     </div>

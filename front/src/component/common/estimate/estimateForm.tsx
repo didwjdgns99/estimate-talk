@@ -13,12 +13,17 @@ import Button from "@/component/common/button/button";
 import { useCreateEstimate } from "@/app/hook/estimate/useCreateEstimate";
 import { useRouter } from "next/navigation";
 
-export default function EstimateForm() {
+type EstimateFormProps = {
+  setPageState: React.Dispatch<
+    React.SetStateAction<"default" | "loading" | "success">
+  >;
+};
+
+export default function EstimateForm({ setPageState }: EstimateFormProps) {
   const [items, setItems] = useState<EstimateItem[]>([createEmptyItem()]);
   const [taxType, setTaxType] = useState<"taxable" | "taxFree">("taxable");
   const [title, setTitle] = useState("");
   const [customer, setCustomer] = useState("");
-
   const hasDiscount = items.some((item) => item.discountRate > 0);
   const hasTitle = title.trim().length > 0;
   const hasCustomer = customer.trim().length > 0;
@@ -33,11 +38,13 @@ export default function EstimateForm() {
 
   const canCreateEstimate = hasTitle && hasCustomer && hasValidItems;
 
-  const { mutate: createEstimate } = useCreateEstimate();
+  const { mutate: createEstimate, isPending } = useCreateEstimate();
 
   const router = useRouter();
 
   const handleCreateEstimate = () => {
+    setPageState("loading");
+
     createEstimate(
       {
         items,
@@ -47,9 +54,13 @@ export default function EstimateForm() {
       },
       {
         onSuccess: (result) => {
-          router.push(`/estimateDetail/${result.data.estimateId}`);
+          setPageState("success");
+          setTimeout(() => {
+            router.push(`/estimateDetail/${result.data.estimateId}`);
+          }, 2000);
         },
         onError: (error) => {
+          setPageState("default");
           console.error(error);
           alert("견적서 생성에 실패했습니다.");
         },

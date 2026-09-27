@@ -11,7 +11,7 @@ export type taxType = "taxable" | "taxFree";
 
 export default function EstimateDetail() {
   const params = useParams<{ estimateId: string }>();
-  const { data, isLoading, isError } = useGetEstimateDetail(params.estimateId);
+  const { data, isError } = useGetEstimateDetail(params.estimateId);
 
   console.log("전체 data:", data);
   console.log("estimate:", data?.estimate);
@@ -21,9 +21,6 @@ export default function EstimateDetail() {
   const taxType = data?.estimate?.estimate?.taxType;
   const customer = data?.estimate.estimate.customer;
   const createdAt = data?.estimate.estimate.createdAt;
-  if (isLoading) {
-    return <div>불러오는 중...</div>;
-  }
 
   if (isError) {
     return <div>견적서를 불러오지 못했습니다.</div>;

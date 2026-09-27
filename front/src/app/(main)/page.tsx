@@ -21,21 +21,11 @@ export default async function Home() {
   const estimateResult = user ? await getEstimateAction(1, 3) : null;
 
   const estimateList: Estimate[] = estimateResult?.data?.estimateList ?? [];
-  console.log("에스티메이트리스트", estimateList);
+  console.log("에스티메이트Result", estimateResult);
 
-  const estimateLength = estimateList.length;
+  const estimateLength = estimateResult?.data?.totalCount ?? 0;
 
-  const now = new Date();
-
-  const thisMonthEstimateList = estimateList.filter((estimate) => {
-    const createdAt = new Date(estimate.createdAt);
-
-    return (
-      createdAt.getFullYear() === now.getFullYear() &&
-      createdAt.getMonth() === now.getMonth()
-    );
-  });
-
+  const thisMonthEstimateList = estimateResult?.data?.thisMonthCount ?? 0;
   const recentEstimate = estimateList[0];
 
   const recentPrice = recentEstimate
@@ -51,17 +41,15 @@ export default async function Home() {
       }, 0)
     : 0;
 
-  const thisMonthEstimateLength = thisMonthEstimateList.length;
-
   return (
     <main className="min-h-screen bg-background text-main-text">
       <section className="mx-auto max-w-6xl px-6 py-10">
-        <h1 className="text-4xl font-bold">견적서 관리</h1>
-        <p className="mt-3 text-secondary-text tracking-wider">
+        <h1 className="text-xl  md:text-4xl font-bold">견적서 관리</h1>
+        <p className="text-sm md:text-4 mt-3 text-secondary-text tracking-wider">
           전체 견적서를 관리하고 새로운 견적서를 작성하세요
         </p>
       </section>
-      <section className="flex justify-space-between w-full mx-auto max-w-6xl px-6 py-10 gap-4">
+      <section className="flex flex-col md:flex md:flex-row justify-space-between w-full mx-auto max-w-6xl px-6 py-10 gap-4">
         <TopCard
           className="flex-1"
           title="전체 견적서"
@@ -71,7 +59,7 @@ export default async function Home() {
         <TopCard
           className="flex-1"
           title="이번달"
-          value={thisMonthEstimateLength}
+          value={thisMonthEstimateList}
           icon={<Calendar className="text-primary" size={22} />}
         />
         <TopCard

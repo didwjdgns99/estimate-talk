@@ -25,13 +25,15 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full flex flex-col items-center justify-center px-4">
-      <div className="flex flex-col items-center gap-2">
-        <Image src={Logo} alt="견적톡 로고" width={180} height={60} />
-        {/* <h1 className="text-3xl font-bold text-gray-900">견적톡</h1> */}
-        <span className="text-sm text-gray-500">
-          간편하게 견적서를 관리하세요
-        </span>
-      </div>
+      <Link href="/">
+        <div className="flex flex-col items-center gap-2">
+          <Image src={Logo} alt="견적톡 로고" width={180} height={60} />
+          {/* <h1 className="text-3xl font-bold text-gray-900">견적톡</h1> */}
+          <span className="text-sm text-gray-500">
+            간편하게 견적서를 관리하세요
+          </span>
+        </div>
+      </Link>
       <div className="w-full max-w-[450px] bg-white border border-gray-200 rounded-xl px-6 py-6 sm:px-8 flex flex-col gap-4 mt-8">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
