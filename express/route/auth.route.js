@@ -5,11 +5,13 @@ const {
   logoutController,
   signupController,
   meController,
+  refreshController,
 } = require("../controller/auth.controller");
 const { loginLimiter } = require("../middlewares/rateLimit.middleware");
 authRoute.post("/login", loginLimiter, loginController);
 authRoute.post("/logout", logoutController);
 authRoute.post("/signup", signupController);
+authRoute.post("/refresh", refreshController);
 authRoute.get("/me", authMiddleware, meController);
 
 module.exports = authRoute;
