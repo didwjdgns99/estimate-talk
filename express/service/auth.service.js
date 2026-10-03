@@ -45,23 +45,28 @@ async function loginService({ email, password }) {
   }
 
   const secret = process.env.JWT_SECRET;
-  if (!secret) {
+  const refresh = process.env.JWT_REFRESH_SECRET;
+  if (!secret || !refresh) {
     const err = new Error(ERROR_MESSAGE.JWT_SECRET_MISSING);
     err.code = ERROR_MESSAGE.JWT_SECRET_MISSING;
     err.status = 500;
     throw err;
   }
 
-  const token = jwt.sign({ id: user.id, email: user.email }, secret, {
+  const accessToken = jwt.sign({ id: user.id, email: user.email }, secret, {
     expiresIn: "1h",
   });
+
+  const refreshToken = jwt.sign({ id: user.id }, refresh, { expiresIn: "7d" });
+
   return {
     user: {
       id: user._id,
       name: user.name,
       email: user.email,
     },
-    token,
+    accessToken,
+    refreshToken,
   };
 }
 
