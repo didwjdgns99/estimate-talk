@@ -2,13 +2,13 @@
 
 import { cookies } from "next/headers";
 import { login, LoginRequest } from "@/apis/auth";
-import { ApiError } from "@/lib/http";
+import { ApiError } from "../../lib/apiError";
 
 export async function loginAction(payload: LoginRequest) {
   try {
     const data = await login(payload);
 
-    if (!data.token) {
+    if (!data.accessToken || !data.refreshToken) {
       return {
         isError: true,
         status: 500,
@@ -18,12 +18,20 @@ export async function loginAction(payload: LoginRequest) {
 
     const cookieStore = await cookies();
 
-    cookieStore.set("token", data.token, {
+    cookieStore.set("accessToken", data.accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
       maxAge: 60 * 60, // 초 단위: 1시간
+    });
+
+    cookieStore.set("refreshToken", data.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
     });
 
     return {

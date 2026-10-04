@@ -1,7 +1,7 @@
 "use server";
 
 import { signup, SignupRequest } from "@/apis/auth";
-import { ApiError } from "@/lib/http";
+import { ApiError } from "@/lib/apiError";
 
 export async function signupAction(payload: SignupRequest) {
   try {

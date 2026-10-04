@@ -13,10 +13,10 @@ import { cookies, headers } from "next/headers";
 
 export async function getAuthToken() {
   const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (token) {
-    return token;
+  if (accessToken) {
+    return accessToken;
   }
 
   const requestHeaders = await headers();
@@ -24,7 +24,7 @@ export async function getAuthToken() {
   const cookie = cookieHeader
     .split(";")
     .map((item) => item.trim())
-    .find((item) => item.startsWith("token="));
+    .find((item) => item.startsWith("accessToken="));
 
   if (!cookie) {
     return undefined;
@@ -34,9 +34,9 @@ export async function getAuthToken() {
 }
 
 export async function getAuthCookie() {
-  const token = await getAuthToken();
+  const accessToken = await getAuthToken();
 
-  console.log("getAuthCookie token 존재:", !!token);
+  console.log("getAuthCookie accessToken 존재:", !!accessToken);
 
-  return token ? `token=${token}` : undefined;
+  return accessToken ? `accessToken=${accessToken}` : undefined;
 }

@@ -44,7 +44,7 @@
 
 import { getMe } from "@/apis/auth";
 import { getAuthToken } from "@/lib/getCookies";
-import { ApiError } from "@/lib/http";
+import { ApiError } from "@/lib/apiError";
 
 export async function getMeAction() {
   try {
