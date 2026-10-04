@@ -12,6 +12,7 @@ import {
   useCheckBusinessStatus,
 } from "@/app/hook/info/useCompanyInfo";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function CompanyInfo() {
   const router = useRouter();
@@ -106,20 +107,20 @@ export default function CompanyInfo() {
     mutate(formData, {
       onSuccess: (data) => {
         console.log(data);
-        alert("회사정보가 저장되었습니다.");
+        toast.success("회사정보가 저장되었습니다.", { duration: 2000 });
 
         router.push("/");
       },
 
       onError: (error) => {
-        alert(error.message);
+        toast.error("회사정보 저장에 실패했습니다.", { duration: 2000 });
       },
     });
   };
 
   const handleCheckBusinessStatus = () => {
     if (!form.businessNumber) {
-      alert("사업자등록번호를 입력하세요.");
+      toast.info("사업자등록번호를 입력하세요.", { duration: 2000 });
       return;
     }
     checkBusinessStatus(form.businessNumber, {

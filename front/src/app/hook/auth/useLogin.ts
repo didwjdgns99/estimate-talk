@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { loginAction } from "@/app/action/login.action";
 import type { LoginRequest } from "@/apis/auth";
+import { toast } from "sonner";
 
 /**
  *
@@ -22,10 +23,10 @@ export function useLogin() {
     },
     onSuccess: () => {
       router.push("/");
+      toast.success("로그인 성공", { duration: 2000 });
     },
     onError: (error) => {
-      console.log("로그인 실패", error);
-      alert("로그인실패");
+      toast.error("로그인 실패", { duration: 2000 });
     },
   });
 }
