@@ -103,10 +103,20 @@ async function checkBusinessStatusService(businessNumber) {
     );
 
     if (!response.ok) {
+      const errorText = await response.text();
+
+      if (response.status === 503) {
+        throw new AppError(
+          503,
+          "국세청 사업자 조회 서버가 일시적으로 이용 불가합니다. 잠시 후 다시 시도해주세요.",
+          "NTS_SERVICE_UNAVAILABLE",
+        );
+      }
+
       throw new AppError(
         502,
         "사업자 상태조회에 실패했습니다.",
-        "BUSINESSC_CHECK_SERVER_ERROR",
+        "BUSINESS_CHECK_SERVER_ERROR",
       );
     }
 
