@@ -1,6 +1,6 @@
 import building from "@/public/building.svg";
 import Image from "next/image";
-import CompanyInfo from "@/component/common/companyInfo/conpanyInfo";
+import CompanyInfo from "@/component/common/companyInfo/companyInfo";
 
 export default function InfoPage() {
   return (
