@@ -12,6 +12,7 @@ import {
 import Button from "@/component/common/button/button";
 import { useCreateEstimate } from "@/app/hook/estimate/useCreateEstimate";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type EstimateFormProps = {
   setPageState: React.Dispatch<
@@ -55,6 +56,12 @@ export default function EstimateForm({ setPageState }: EstimateFormProps) {
       {
         onSuccess: (result) => {
           setPageState("success");
+          toast.success(
+            "견적서가 생성되었습니다. 잠시 후 상세페이지로 이동합니다.",
+            {
+              duration: 2000,
+            },
+          );
           setTimeout(() => {
             router.push(`/estimateDetail/${result.data.estimateId}`);
           }, 2000);
@@ -62,7 +69,9 @@ export default function EstimateForm({ setPageState }: EstimateFormProps) {
         onError: (error) => {
           setPageState("default");
           console.error(error);
-          alert("견적서 생성에 실패했습니다.");
+          toast.error("견적서 생성에 실패했습니다. 다시 시도해주세요.", {
+            duration: 2000,
+          });
         },
       },
     );

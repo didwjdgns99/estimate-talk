@@ -4,6 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { signupAction } from "@/app/action/auth.action";
 import type { SignupRequest } from "@/apis/auth";
+import { toast } from "sonner";
 
 export function useSignup() {
   const router = useRouter();
@@ -18,10 +19,10 @@ export function useSignup() {
     },
     onSuccess: () => {
       router.push("/login");
+      toast.success("회원가입 성공", { duration: 2000 });
     },
     onError: (error) => {
-      console.log("회원가입 실패", error);
-      alert("회원가입실패");
+      toast.error("회원가입 실패", { duration: 2000 });
     },
   });
 }
