@@ -1,18 +1,12 @@
 import { API_BASE_URL } from "./api";
 import { getAuthCookie } from "./getCookies";
-
-export class ApiError extends Error {
-  status: number;
-  constructor(status: number, message: string) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-  }
-}
+import { ApiError } from "./apiError";
+import { refreshAccessToken } from "./refreshToken";
 
 type HttpConfig = {
   authRequired?: boolean;
   timeoutMS?: number;
+  retryOn401?: boolean;
 };
 
 export async function http(
@@ -28,9 +22,21 @@ export async function http(
 
   try {
     const cookie = config.authRequired ? await getAuthCookie() : undefined;
-    const authToken = cookie?.replace(/^token=/, "");
 
-    if (config.authRequired && !authToken) {
+    // ✅ authToken → accessToken
+    // ✅ token= → accessToken=
+    const accessToken = cookie?.replace(/^accessToken=/, "");
+
+    if (config.authRequired && !accessToken) {
+      if (config.retryOn401 !== false) {
+        await refreshAccessToken();
+
+        return http(path, options, {
+          ...config,
+          retryOn401: false,
+        });
+      }
+
       throw new ApiError(401, "로그인이 필요합니다.");
     }
 
@@ -44,15 +50,31 @@ export async function http(
         ...(options.body && !isFormData
           ? { "Content-Type": "application/json" }
           : {}),
-        ...(config.authRequired && authToken
+
+        // ✅ authToken → accessToken
+        ...(config.authRequired && accessToken
           ? {
-              Cookie: `token=${authToken}`,
-              Authorization: `Bearer ${authToken}`,
+              Cookie: `accessToken=${accessToken}`,
+              Authorization: `Bearer ${accessToken}`,
             }
           : {}),
+
         ...options.headers,
       },
     });
+
+    if (
+      res.status === 401 &&
+      config.authRequired &&
+      config.retryOn401 !== false
+    ) {
+      await refreshAccessToken();
+
+      return http(path, options, {
+        ...config,
+        retryOn401: false,
+      });
+    }
 
     const contentType = res.headers.get("content-type") ?? "";
     const isJson = contentType.includes("application/json");
@@ -61,19 +83,24 @@ export async function http(
       const errorBody = isJson
         ? await res.json().catch(() => null)
         : await res.text().catch(() => "");
+
       throw new ApiError(
         res.status,
-        typeof errorBody === "object" && errorBody?.message //express에서 객체로 에러메세지 보내주면 그걸 쓰고, 아니면 기본 메세지
+        typeof errorBody === "object" && errorBody?.message
           ? errorBody.message
           : "API 요청 실패했습니다.",
       );
     }
+
     if (!isJson) {
       return null;
     }
 
     return await res.json();
   } catch (error) {
+    console.log("ApiError 값:", ApiError);
+    console.log("ApiError 타입:", typeof ApiError);
+    console.log("실제 error:", error);
     if (error instanceof ApiError) {
       throw error;
     }

@@ -122,6 +122,7 @@ export default function CompanyInfo() {
     }
     checkBusinessStatus(form.businessNumber, {
       onSuccess: (data) => {
+        console.log("사업자 조회 응답:", data);
         setIsCheckedBusinessStatus(true);
         if (data.isError) {
           setIsSuccessBusinessStatus(false);
@@ -248,7 +249,7 @@ export default function CompanyInfo() {
                         </span>
                       ) : (
                         <span className="text-xs font-normal text-red-500">
-                          ✕ 조회되지 않은 사업자입니다.
+                          ✕ {businessStatus || "사업자 조회에 실패했습니다."}
                         </span>
                       ))}
                   </div>

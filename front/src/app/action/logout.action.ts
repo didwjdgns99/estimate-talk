@@ -2,13 +2,14 @@
 
 import { cookies } from "next/headers";
 import { logout } from "@/apis/auth";
-import { ApiError } from "@/lib/http";
+import { ApiError } from "@/lib/apiError";
 
 export default async function logoutAction() {
   try {
     const data = await logout();
     const cookieStore = await cookies();
-    cookieStore.delete("token");
+    cookieStore.delete("accessToken");
+    cookieStore.delete("refreshToken");
 
     return data;
   } catch (error) {

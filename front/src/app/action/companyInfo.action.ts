@@ -5,7 +5,7 @@ import {
   getCompanyInfo,
   checkBusinessStatus,
 } from "@/apis/companyInfo";
-import { ApiError } from "@/lib/http";
+import { ApiError } from "@/lib/apiError";
 
 export async function createCompanyInfoAction(formData: FormData) {
   try {

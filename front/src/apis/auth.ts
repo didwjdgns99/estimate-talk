@@ -41,7 +41,7 @@ export async function getMe(token?: string) {
     method: "GET",
     headers: token
       ? {
-          Cookie: `token=${token}`,
+          Cookie: `accessToken=${token}`,
           Authorization: `Bearer ${token}`,
         }
       : undefined,
