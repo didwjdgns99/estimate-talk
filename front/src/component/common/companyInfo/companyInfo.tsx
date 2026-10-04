@@ -52,6 +52,7 @@ export default function CompanyInfo() {
   const [isCheckedBusinessStatus, setIsCheckedBusinessStatus] = useState(false);
   const [isSuccessBusinessStatus, setIsSuccessBusinessStatus] = useState(false);
   const [businessStatus, setBusinessStatus] = useState("");
+  const [initialBusinessNumber, setInitialBusinessNumber] = useState("");
 
   const { mutate, isPending } = useCreateCompanyInfo();
   const { data: companyInfoData, isLoading, isError } = useGetCompanyInfo();
@@ -86,6 +87,7 @@ export default function CompanyInfo() {
     });
 
     setStampPreview(companyInfo.stampUrl ?? null);
+    setInitialBusinessNumber(companyInfo.businessNumber);
   }, [companyInfoData]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -140,10 +142,13 @@ export default function CompanyInfo() {
     });
   };
 
+  const isBusinessNumberChanged = form.businessNumber !== initialBusinessNumber;
+
   const open = useDaumPostcodePopup();
 
   const isCompanyNameValid = form.companyName.trim() !== "";
-  const isBusinessNumberStatusValid = isSuccessBusinessStatus;
+  const isBusinessNumberStatusValid =
+    isSuccessBusinessStatus || !isBusinessNumberChanged;
   const isBusinessNumberValid = /^[0-9]{10}$/.test(
     form.businessNumber.replaceAll("-", ""),
   ); //사업자에서 하이픈을 빈 문자열로 바꿔라
