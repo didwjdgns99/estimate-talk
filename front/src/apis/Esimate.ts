@@ -53,3 +53,15 @@ export async function getEstimateApi(
     },
   );
 }
+
+export async function deleteEstimateApi(estimateId: string) {
+  return http(
+    `/api/estimate/${estimateId}`,
+    {
+      method: "DELETE",
+    },
+    {
+      authRequired: true,
+    },
+  );
+}

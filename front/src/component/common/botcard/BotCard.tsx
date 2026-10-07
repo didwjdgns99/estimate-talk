@@ -1,27 +1,32 @@
 import { cn } from "@/lib/utils";
+import EstimateMenu from "@/component/common/estimateMenu/estimateMenu";
 
 type BotCardProps = {
+  estimateId: string;
   estimateTitle: string;
   estimateCompany: string;
   estimateDate: string;
   estimagePrice: string;
   className?: string;
   onClick?: () => void;
+  onDeleted: (estimateId: string) => void;
 };
 
 export default function BotCard({
+  estimateId,
   estimateTitle,
   estimateCompany,
   estimateDate,
   estimagePrice,
   className,
   onClick,
+  onDeleted,
 }: BotCardProps) {
   return (
     <div
       onClick={onClick}
       className={cn(
-        "flex flex-col md:flex md:flex-row justify-between md:items-center px-4 py-6 bg-white rounded-lg shadow border border-gray-200 cursor-pointer hover:border-primary transition",
+        "relative flex flex-col md:flex md:flex-row justify-between md:items-end px-4 py-6 bg-white rounded-lg shadow border border-gray-200 cursor-pointer hover:border-primary transition",
         className,
       )}
     >
@@ -38,6 +43,12 @@ export default function BotCard({
       <p className="text-md font-bold md:text-2xl text-primary">
         {estimagePrice}
       </p>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="absolute top-2 right-3 "
+      >
+        <EstimateMenu estimateId={estimateId} onDeleted={onDeleted} />
+      </div>
     </div>
   );
 }
