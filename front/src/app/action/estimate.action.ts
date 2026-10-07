@@ -6,6 +6,7 @@ import {
   CreateEstimateRequest,
   getEstimateDetail,
   getEstimateApi,
+  deleteEstimateApi,
 } from "@/apis/Esimate";
 import { ApiError } from "@/lib/apiError";
 
@@ -56,5 +57,21 @@ export async function getEstimateAction(
     }
 
     throw new Error("알 수 없는 오류가 발생했습니다.");
+  }
+}
+
+export async function deleteEstimateAction(estimateId: string) {
+  try {
+    const result = await deleteEstimateApi(estimateId);
+    return {
+      isError: false,
+      message: result.message,
+      data: result,
+    };
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw new Error(error.message);
+    }
+    throw new Error("견적서 삭제 중 오류가 발생했습니다.");
   }
 }

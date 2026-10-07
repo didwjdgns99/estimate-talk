@@ -152,6 +152,13 @@ export default function EstimateList({
     router.push(`/estimateDetail/${estimateId}`);
   };
 
+  const handleDeleted = (estimateId: string) => {
+    setEstimateList((prev) =>
+      prev.filter((estimate) => estimate._id !== estimateId),
+    );
+    router.refresh();
+  };
+
   return (
     <div
       ref={scrollRef}
@@ -177,7 +184,9 @@ export default function EstimateList({
 
         return (
           <BotCard
+            estimateId={estimate._id}
             onClick={() => onClickEstimate(estimate._id)}
+            onDeleted={handleDeleted}
             key={estimate._id}
             estimateCompany={estimate.customer}
             estimateTitle={estimate.title}
