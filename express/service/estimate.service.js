@@ -1,4 +1,5 @@
 const Estimate = require("../models/estimate.model");
+const AppError = require("../utils/AppError");
 
 async function createEstimateService(userId, payload) {
   const { items, title, taxType, customer } = payload;
@@ -27,6 +28,21 @@ async function getEstimateService(userId, estimateId) {
   }
 
   return estimate;
+}
+
+async function deleteEstimateService(userId, estimateId) {
+  const estimate = await Estimate.findOneAndDelete({
+    _id: estimateId,
+    userId,
+  });
+
+  if (!estimate) {
+    throw new AppError(
+      404,
+      "삭제할 견적서를 찾을 수 없습니다.",
+      "ESTIMATE_NOT_FOUND",
+    );
+  }
 }
 
 async function getEstimateListService(userId, { page, limit, searchKeyword }) {
@@ -85,4 +101,5 @@ module.exports = {
   createEstimateService,
   getEstimateService,
   getEstimateListService,
+  deleteEstimateService,
 };
