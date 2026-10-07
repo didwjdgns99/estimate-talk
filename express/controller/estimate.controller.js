@@ -2,6 +2,7 @@ const {
   createEstimateService,
   getEstimateService,
   getEstimateListService,
+  deleteEstimateService,
 } = require("../service/estimate.service");
 
 async function createEstimateController(req, res, next) {
@@ -40,6 +41,21 @@ async function getEstimateController(req, res, next) {
   }
 }
 
+async function deleteEstimateController(req, res, next) {
+  try {
+    const userId = req.user.id;
+    const { estimateId } = req.params;
+
+    const estimate = await deleteEstimateService(userId, estimateId);
+
+    return res.status(200).json({
+      message: "견적서 삭제 성공",
+    });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getEstimateListController(req, res, next) {
   try {
     const userId = req.user.id;
@@ -69,4 +85,5 @@ module.exports = {
   createEstimateController,
   getEstimateController,
   getEstimateListController,
+  deleteEstimateController,
 };
