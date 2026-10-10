@@ -43,8 +43,14 @@ export async function getEstimateApi(
   limit = 3,
   searchKeyword: string = "",
 ) {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    searchKeyword,
+  });
+
   return http(
-    `/api/estimate?page=${page}&limit=${limit}&searchKeyword=${searchKeyword}`,
+    `/api/estimate?${params.toString()}`,
     {
       method: "GET",
     },
