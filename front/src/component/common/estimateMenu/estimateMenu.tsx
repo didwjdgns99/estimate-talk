@@ -54,11 +54,9 @@ export default function EstimateMenu({
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>
+          <DropdownMenuItem onSelect={handleDelete}>
             <Trash2 size={16} />
-            <span onClick={handleDelete} className="text-red-500">
-              삭제
-            </span>
+            <span className="text-red-500">삭제</span>
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
