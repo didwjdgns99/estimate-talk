@@ -61,7 +61,7 @@ export default function EstimateSummary({
           <span className="font-bold text-2xl text-primary">
             {taxType === "taxable"
               ? includesTax.toLocaleString()
-              : totalOriginalPrice.toLocaleString()}{" "}
+              : afterDiscountPrice.toLocaleString()}{" "}
             원
           </span>
         </div>
