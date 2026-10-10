@@ -51,17 +51,19 @@ async function getEstimateListService(userId, { page, limit, searchKeyword }) {
     userId,
   };
   if (searchKeyword) {
-    //$or 조건 1,조건2중 하나라도 맞으면 검색결과에 포함되도록
+    // 정규식 특수문자를 일반 문자로 검색하도록 처리
+    const escapedKeyword = searchKeyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
     filter.$or = [
       {
         customer: {
-          $regex: searchKeyword,
+          $regex: escapedKeyword,
           $options: "i",
         },
       },
       {
         title: {
-          $regex: searchKeyword,
+          $regex: escapedKeyword,
           $options: "i",
         },
       },
