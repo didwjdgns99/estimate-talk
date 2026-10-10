@@ -4,6 +4,7 @@ const {
   getEstimateListService,
   deleteEstimateService,
 } = require("../service/estimate.service");
+const AppError = require("../utils/AppError");
 
 async function createEstimateController(req, res, next) {
   try {
@@ -60,9 +61,36 @@ async function getEstimateListController(req, res, next) {
   try {
     const userId = req.user.id;
 
-    const page = Number(req.query.page) || 1; //문자열로 들어와서 number
-    const limit = Number(req.query.limit) || 3;
-    const searchKeyword = req.query.searchKeyword || "";
+    const pageValue = req.query.page;
+    const limitValue = req.query.limit;
+    const page = pageValue === undefined ? 1 : Number(pageValue);
+    const limit = limitValue === undefined ? 3 : Number(limitValue);
+    const searchKeyword = req.query.searchKeyword ?? "";
+
+    if (
+      (pageValue !== undefined && typeof pageValue !== "string") ||
+      !Number.isSafeInteger(page) ||
+      page < 1 ||
+      (limitValue !== undefined && typeof limitValue !== "string") ||
+      !Number.isSafeInteger(limit) ||
+      limit < 1 ||
+      limit > 100 ||
+      !Number.isSafeInteger((page - 1) * limit)
+    ) {
+      throw new AppError(
+        400,
+        "page는 양의 정수, limit은 1~100 사이의 정수여야 합니다.",
+        "INVALID_PAGINATION",
+      );
+    }
+
+    if (typeof searchKeyword !== "string") {
+      throw new AppError(
+        400,
+        "검색어는 문자열이어야 합니다.",
+        "INVALID_SEARCH_KEYWORD",
+      );
+    }
     const { estimateList, totalCount, thisMonthCount } =
       await getEstimateListService(userId, {
         page,
