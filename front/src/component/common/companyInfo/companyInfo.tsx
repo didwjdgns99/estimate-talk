@@ -13,40 +13,10 @@ import {
 } from "@/app/hook/info/useCompanyInfo";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useCompanyInfo } from "@/component/common/companyInfo/useCompanyInfo";
 
 export default function CompanyInfo() {
   const router = useRouter();
-
-  const [form, setForm] = useState({
-    companyName: "",
-    businessNumber: "",
-    ceoName: "",
-    businessType: "",
-    businessItem: "",
-    manager: "",
-    phone: "",
-    fax: "",
-    mobile: "",
-    email: "",
-    zipCode: "", //우편번호
-    address: "",
-    detailAddress: "",
-  });
-
-  const [touched, setTouched] = useState({
-    companyName: false,
-    businessNumber: false,
-    ceoName: false,
-    businessType: false,
-    businessItem: false,
-    manager: false,
-    phone: false,
-    mobile: false,
-    email: false,
-    zipCode: false,
-    address: false,
-    detailAddress: false,
-  });
 
   const [stampFile, setStampFile] = useState<File | null>(null);
   const [stampPreview, setStampPreview] = useState<string | null>(null);
@@ -60,10 +30,28 @@ export default function CompanyInfo() {
   const { mutate: checkBusinessStatus, isPending: isCheckingBusinessStatus } =
     useCheckBusinessStatus();
 
-  console.log({
-    companyInfoData,
-    isLoading,
-    isError,
+  const {
+    touched,
+    handleBlur,
+    handleChange,
+    form,
+    setForm,
+    isCompanyNameValid,
+    isBusinessNumberValid,
+    isCeoNameValid,
+    isBusinessTypeValid,
+    isBusinessItemValid,
+    isManagerValid,
+    isPhoneValid,
+    isMobileValid,
+    isEmailValid,
+    isDetailAddressValid,
+    isFormValid,
+  } = useCompanyInfo({
+    initialBusinessNumber,
+    isSuccessBusinessStatus,
+    stampFile,
+    stampPreview,
   });
 
   useEffect(() => {
@@ -89,10 +77,11 @@ export default function CompanyInfo() {
 
     setStampPreview(companyInfo.stampUrl ?? null);
     setInitialBusinessNumber(companyInfo.businessNumber);
-  }, [companyInfoData]);
+  }, [companyInfoData, setForm]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!isFormValid || isPending) return;
     const formData = new FormData();
 
     Object.entries(form).forEach(([key, value]) => {
@@ -143,44 +132,7 @@ export default function CompanyInfo() {
     });
   };
 
-  const isBusinessNumberChanged = form.businessNumber !== initialBusinessNumber;
-
   const open = useDaumPostcodePopup();
-
-  const isCompanyNameValid = form.companyName.trim() !== "";
-  const isBusinessNumberStatusValid =
-    isSuccessBusinessStatus || !isBusinessNumberChanged;
-  const isBusinessNumberValid = /^[0-9]{10}$/.test(
-    form.businessNumber.replaceAll("-", ""),
-  ); //사업자에서 하이픈을 빈 문자열로 바꿔라
-  const isCeoNameValid = form.ceoName.trim() !== "";
-  const isBusinessTypeValid = form.businessType.trim() !== "";
-  const isBusinessItemValid = form.businessItem.trim() !== "";
-  const isManagerValid = form.manager.trim() !== "";
-  const isPhoneValid = /^[0-9]+$/.test(form.phone.replaceAll("-", "")); //+를 넣으면 0-9다음으로 1개 이상 있어야 한다 즉 없으면 안된다.
-  const isMobileValid = /^[0-9]+$/.test(form.mobile.replaceAll("-", ""));
-
-  //이메일검사
-  //대소문자+숫자+일부 특수문자 사용 + @ + 도메인에 (대소문자,숫자, .- 만 가능) + \.(온점 확인) 최소 2글자 이상 대소문자 가능
-  const isEmailValid = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/.test(
-    form.email,
-  );
-
-  const isDetailAddressValid = form.detailAddress.trim() !== "";
-  const isStampValid = !!stampFile || !!stampPreview;
-  const isFormValid =
-    isCompanyNameValid &&
-    isBusinessNumberStatusValid &&
-    isBusinessNumberValid &&
-    isCeoNameValid &&
-    isBusinessTypeValid &&
-    isBusinessItemValid &&
-    isManagerValid &&
-    isPhoneValid &&
-    isMobileValid &&
-    isEmailValid &&
-    isDetailAddressValid &&
-    isStampValid;
 
   const handleAddressSearch = () => {
     open({
@@ -192,15 +144,6 @@ export default function CompanyInfo() {
         }));
       },
     });
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { name } = e.target;
-
-    setTouched((prev) => ({
-      ...prev,
-      [name]: true,
-    }));
   };
 
   const handleStampChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -215,7 +158,7 @@ export default function CompanyInfo() {
     const value = e.target.value.replace(/\D/g, "");
     if (value.length > 10) return;
 
-    setForm({ ...form, [e.target.name]: value });
+    handleChange("businessNumber", value);
     setIsSuccessBusinessStatus(false);
     setBusinessStatus("");
   };
@@ -231,7 +174,7 @@ export default function CompanyInfo() {
             label="상호명 *"
             placeholder="(주)견적톡"
             value={form.companyName}
-            onChange={(e) => setForm({ ...form, companyName: e.target.value })}
+            onChange={(e) => handleChange("companyName", e.target.value)}
             name="companyName"
             onBlur={handleBlur}
             errorMessage={
@@ -301,7 +244,7 @@ export default function CompanyInfo() {
             label="대표자 *"
             placeholder="홍길동"
             value={form.ceoName}
-            onChange={(e) => setForm({ ...form, ceoName: e.target.value })}
+            onChange={(e) => handleChange("ceoName", e.target.value)}
             name="ceoName"
             onBlur={handleBlur}
             errorMessage={
@@ -314,12 +257,7 @@ export default function CompanyInfo() {
             label="업태 *"
             placeholder="도소매"
             value={form.businessType}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                businessType: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange("businessType", e.target.value)}
             name="businessType"
             onBlur={handleBlur}
             errorMessage={
@@ -332,12 +270,7 @@ export default function CompanyInfo() {
             label="종목 *"
             placeholder="화훼"
             value={form.businessItem}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                businessItem: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange("businessItem", e.target.value)}
             name="businessItem"
             onBlur={handleBlur}
             errorMessage={
@@ -351,12 +284,7 @@ export default function CompanyInfo() {
           <Input
             label="담당자 *"
             value={form.manager}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                manager: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange("manager", e.target.value)}
             name="manager"
             onBlur={handleBlur}
             errorMessage={
@@ -367,10 +295,7 @@ export default function CompanyInfo() {
             label="전화 *"
             value={form.phone}
             onChange={(e) =>
-              setForm({
-                ...form,
-                phone: e.target.value.replace(/[^0-9-]/g, ""), // 숫자아니면 못 쓰게하기
-              })
+              handleChange("phone", e.target.value.replace(/[^0-9-]/g, ""))
             }
             name="phone"
             onBlur={handleBlur}
@@ -382,20 +307,14 @@ export default function CompanyInfo() {
             label="팩스 "
             value={form.fax}
             onChange={(e) =>
-              setForm({
-                ...form,
-                fax: e.target.value.replace(/[^0-9-]/g, ""),
-              })
+              handleChange("fax", e.target.value.replace(/[^0-9-]/g, ""))
             }
           />
           <Input
             label="핸드폰 *"
             value={form.mobile}
             onChange={(e) =>
-              setForm({
-                ...form,
-                mobile: e.target.value.replace(/[^0-9-]/g, ""),
-              })
+              handleChange("mobile", e.target.value.replace(/[^0-9-]/g, ""))
             }
             name="mobile"
             onBlur={handleBlur}
@@ -413,12 +332,7 @@ export default function CompanyInfo() {
                 ? "이메일 형식이 올바르지 않습니다."
                 : ""
             }
-            onChange={(e) =>
-              setForm({
-                ...form,
-                email: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange("email", e.target.value)}
           />
         </div>
         <div className="flex flex-col gap-2 px-4 py-6 bg-white rounded-lg shadow border border-gray-200 cursor-pointer hover:border-primary transition">
@@ -428,10 +342,7 @@ export default function CompanyInfo() {
               placeholder="01234"
               value={form.zipCode}
               onChange={(e) =>
-                setForm({
-                  ...form,
-                  zipCode: e.target.value.replace(/[^0-9]/g, ""),
-                })
+                handleChange("zipCode", e.target.value.replace(/[^0-9]/g, ""))
               }
             />
             <Image
@@ -449,23 +360,13 @@ export default function CompanyInfo() {
             placeholder="서울특별시 강남구 테헤란로 123"
             value={form.address}
             onClick={handleAddressSearch}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                address: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange("address", e.target.value)}
           />
           <Input
             label="상세주소 *"
             placeholder="상세주소를 적어주세요."
             value={form.detailAddress}
-            onChange={(e) =>
-              setForm({
-                ...form,
-                detailAddress: e.target.value,
-              })
-            }
+            onChange={(e) => handleChange("detailAddress", e.target.value)}
             name="detailAddress"
             onBlur={handleBlur}
             errorMessage={
