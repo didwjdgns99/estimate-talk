@@ -104,7 +104,7 @@ async function checkBusinessStatusService(businessNumber) {
 
     if (!response.ok) {
       const errorText = await response.text();
-
+      console.error("국세청 API 요청 실패:", response.status, errorText);
       if (response.status === 503) {
         throw new AppError(
           503,

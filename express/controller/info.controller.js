@@ -6,9 +6,6 @@ const {
 
 async function createInfo(req, res) {
   try {
-    console.log("req.body:", req.body);
-    console.log("req.file:", req.file);
-
     const userId = req.user.id;
     console.log("생성할 때 userId:", userId);
     const companyInfo = await createInfoService(userId, req.body, req.file);
@@ -52,12 +49,6 @@ async function getInfo(req, res) {
 async function checkBusinessStatusController(req, res, next) {
   try {
     const { businessNumber } = req.body;
-
-    if (!businessNumber) {
-      return res.status(400).json({
-        message: "사업자등록번호를 입력해주세요.",
-      });
-    }
 
     const result = await checkBusinessStatusService(businessNumber);
 

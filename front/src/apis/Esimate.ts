@@ -50,7 +50,7 @@ export async function getEstimateApi(
   });
 
   return http(
-    `/api/estimate?${params.toString()}`,
+    `/api/estimate?${params.toString()}`, //인코딩된 쿼리 문자열을 URL에 추가
     {
       method: "GET",
     },

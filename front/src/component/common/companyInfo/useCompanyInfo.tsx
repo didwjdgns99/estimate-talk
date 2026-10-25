@@ -39,6 +39,7 @@ export function useCompanyInfo(options: CompanyInfoValidationOptions) {
     detailAddress: false,
   });
 
+  //form에 있는 key값을 filed로 받아서 value를 바꿔주는 함수
   const handleChange = (field: keyof typeof form, value: string) => {
     setForm((prev) => ({
       ...prev,
@@ -78,6 +79,7 @@ export function useCompanyInfo(options: CompanyInfoValidationOptions) {
     isDetailAddressValid &&
     isStampValid;
 
+  //입력칸에서 빠져나갔느지
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name } = e.target;
 
