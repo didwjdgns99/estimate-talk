@@ -22,9 +22,7 @@ async function getEstimateService(userId, estimateId) {
   }).lean();
 
   if (!estimate) {
-    const error = new Error("견적서를 찾을 수 없습니다.");
-    error.status = 404;
-    throw error;
+    throw new AppError(404, "견적서를 찾을 수 없습니다.", "ESTIMATE_NOT_FOUND");
   }
 
   return estimate;
@@ -52,7 +50,7 @@ async function getEstimateListService(userId, { page, limit, searchKeyword }) {
   };
   if (searchKeyword) {
     // 정규식 특수문자를 일반 문자로 검색하도록 처리
-    const escapedKeyword = searchKeyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const escapedKeyword = searchKeyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // 앞에 특수문자들 앞에 / 붙이도록
 
     filter.$or = [
       {

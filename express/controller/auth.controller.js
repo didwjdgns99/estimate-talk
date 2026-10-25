@@ -17,6 +17,8 @@ const {
 async function loginController(req, res) {
   try {
     const { email, password } = req.body;
+
+    //zod 이메일 패스워드 유뮤 및 유효성
     if (!email || !password) {
       return res.status(400).json({
         isError: true,
@@ -50,7 +52,7 @@ async function loginController(req, res) {
 function refreshController(req, res) {
   try {
     const { refreshToken } = req.body;
-
+    //이건 그냥 둬도 될듯?
     if (!refreshToken) {
       return res.status(401).json({
         isError: true,
@@ -120,6 +122,7 @@ function logoutController(req, res) {
 
 async function signupController(req, res) {
   try {
+    // 이름 이메일 패스워드 유무 및 유효성
     const { name, email, password } = req.body;
 
     const result = await signupService({ name, email, password });

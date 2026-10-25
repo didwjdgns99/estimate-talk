@@ -10,6 +10,43 @@ function errorMiddleware(error, req, res, next) {
       data: null,
     });
   }
+  //중복 저장
+  if (error.code === 11000) {
+    return res.status(409).json({
+      message: "이미 등록된 정보입니다.",
+      code: "DUPLICATE_KEY",
+      data: null,
+    });
+  }
+  //castError 타입에러
+  //validationError 스키마 규칙 에러
+  if (error.name === "CastError" || error.name === "ValidationError") {
+    return res.status(400).json({
+      message: "입력한 데이터의 형식이나 값을 확인해 주세요.",
+      code: "VALIDATION_ERROR",
+      data: null,
+    });
+  }
+
+  if (error.name === "MulterError") {
+    const isFileTooLarge = error.code === "LIMIT_FILE_SIZE";
+
+    return res.status(isFileTooLarge ? 413 : 400).json({
+      message: isFileTooLarge
+        ? "업로드 가능한 파일 크기를 초과했습니다."
+        : "파일 업로드 요청을 확인해 주세요.",
+      code: isFileTooLarge ? "FILE_TOO_LARGE" : "FILE_UPLOAD_ERROR",
+      data: null,
+    });
+  }
+
+  if (error.type === "entity.parse.failed" && error.status === 400) {
+    return res.status(400).json({
+      message: "요청 본문의 JSON 형식이 올바르지 않습니다.",
+      code: "INVALID_JSON",
+      data: null,
+    });
+  }
 
   if (
     error.name === "MongooseServerSelectionError" ||
@@ -30,3 +67,5 @@ function errorMiddleware(error, req, res, next) {
     data: null,
   });
 }
+
+module.exports = errorMiddleware;

@@ -4,10 +4,11 @@ const {
   getEstimateListService,
   deleteEstimateService,
 } = require("../service/estimate.service");
-const AppError = require("../utils/AppError");
 
 async function createEstimateController(req, res, next) {
   try {
+    //한품목의 품목명,단가,수량,할인율 => items[]
+    //제목,고객명,과세유무,items가 다 존재하는지?
     const userId = req.user.id;
     const payload = req.body;
 
@@ -26,6 +27,7 @@ async function createEstimateController(req, res, next) {
 async function getEstimateController(req, res, next) {
   try {
     const userId = req.user.id;
+    // 24자리 16진수 문자열인지 검사 => objectId 사용하기 때문에
     const { estimateId } = req.params;
 
     console.log("estimateId:", estimateId);
@@ -45,6 +47,7 @@ async function getEstimateController(req, res, next) {
 async function deleteEstimateController(req, res, next) {
   try {
     const userId = req.user.id;
+    //24자리 16진수 문자열
     const { estimateId } = req.params;
 
     const estimate = await deleteEstimateService(userId, estimateId);
@@ -60,37 +63,8 @@ async function deleteEstimateController(req, res, next) {
 async function getEstimateListController(req, res, next) {
   try {
     const userId = req.user.id;
+    const { page, limit, searchKeyword } = req.validatedQuery;
 
-    const pageValue = req.query.page;
-    const limitValue = req.query.limit;
-    const page = pageValue === undefined ? 1 : Number(pageValue);
-    const limit = limitValue === undefined ? 3 : Number(limitValue);
-    const searchKeyword = req.query.searchKeyword ?? "";
-
-    if (
-      (pageValue !== undefined && typeof pageValue !== "string") ||
-      !Number.isSafeInteger(page) ||
-      page < 1 ||
-      (limitValue !== undefined && typeof limitValue !== "string") ||
-      !Number.isSafeInteger(limit) ||
-      limit < 1 ||
-      limit > 100 ||
-      !Number.isSafeInteger((page - 1) * limit)
-    ) {
-      throw new AppError(
-        400,
-        "page는 양의 정수, limit은 1~100 사이의 정수여야 합니다.",
-        "INVALID_PAGINATION",
-      );
-    }
-
-    if (typeof searchKeyword !== "string") {
-      throw new AppError(
-        400,
-        "검색어는 문자열이어야 합니다.",
-        "INVALID_SEARCH_KEYWORD",
-      );
-    }
     const { estimateList, totalCount, thisMonthCount } =
       await getEstimateListService(userId, {
         page,
