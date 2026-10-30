@@ -22,7 +22,7 @@ const getEstimateListSchema = zod
 
   //위에 변환값을 가지고 추가 검증을 한다.
   .refine(({ page, limit }) => Number.isSafeInteger((page - 1) * limit), {
-    path: ["page"], //어느 필드에서 발생한 오류인지”를 지정하는 옵션
+    path: ["page"], //검증 실패를 page 필드의 오류로 연결
     message: "페이지가 너무 큽니다.",
   });
 
