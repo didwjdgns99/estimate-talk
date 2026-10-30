@@ -1,4 +1,5 @@
 import { http } from "@/lib/http";
+import { headers } from "next/headers";
 
 export type SignupRequest = {
   name: string;
@@ -36,16 +37,17 @@ export function login(payload: LoginRequest) {
   return result;
 }
 
-export async function getMe(token?: string) {
-  return http("/api/auth/me", {
-    method: "GET",
-    headers: token
-      ? {
-          Cookie: `accessToken=${token}`,
-          Authorization: `Bearer ${token}`,
-        }
-      : undefined,
-  });
+export async function getMe() {
+  return http(
+    "/api/auth/me",
+    {
+      method: "GET",
+      cache: "no-store",
+    },
+    {
+      authRequired: true,
+    },
+  );
 }
 
 export async function logout() {
