@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 function authMiddleware(req, res, next) {
   try {
-    const cookieToken = req.cookies?.token;
+    const cookieToken = req.cookies?.accessToken;
     const authHeader = req.headers.authorization;
     const bearerToken = authHeader?.startsWith("Bearer ")
       ? authHeader.slice(7)
@@ -42,7 +42,7 @@ function authMiddleware(req, res, next) {
 
 module.exports = authMiddleware;
 /**
- * req.cookies.token으로 가져오기
+ * req.cookies.accessToken으로 가져오기
  * token 검사
  * 시크릿키 검사
  * verify로 검사및 payload 추출

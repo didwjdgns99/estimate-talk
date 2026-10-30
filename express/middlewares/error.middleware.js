@@ -40,6 +40,13 @@ function errorMiddleware(error, req, res, next) {
     });
   }
 
+  if (error.code === "LIMIT_UNEXPECTED_FILE") {
+    return res.status(400).json({
+      message: "도장 파일은 stamp 필드로 한 개만 보내주세요.",
+      code: error.code,
+    });
+  }
+
   if (error.type === "entity.parse.failed" && error.status === 400) {
     return res.status(400).json({
       message: "요청 본문의 JSON 형식이 올바르지 않습니다.",

@@ -1,7 +1,7 @@
 const AppError = require("../utils/AppError");
 
 function validateBody(schema) {
-  return (req, res, next) => {
+  return (req, _, next) => {
     const result = schema.safeParse(req.body);
 
     if (!result.success) {
