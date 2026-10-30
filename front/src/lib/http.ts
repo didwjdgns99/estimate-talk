@@ -7,6 +7,7 @@ type HttpConfig = {
   authRequired?: boolean;
   timeoutMS?: number;
   retryOn401?: boolean;
+  accessTokenOverride?: string;
 };
 
 export async function http(
@@ -21,46 +22,47 @@ export async function http(
   }, config.timeoutMS ?? 5000);
 
   try {
-    const cookie = config.authRequired ? await getAuthCookie() : undefined;
+    const cookie =
+      config.authRequired && !config.accessTokenOverride
+        ? await getAuthCookie()
+        : undefined;
 
-    // ✅ authToken → accessToken
-    // ✅ token= → accessToken=
-    const accessToken = cookie?.replace(/^accessToken=/, "");
+    const accessToken =
+      config.accessTokenOverride ?? cookie?.replace(/^accessToken=/, "");
 
     if (config.authRequired && !accessToken) {
       if (config.retryOn401 !== false) {
-        await refreshAccessToken();
+        const newAccessToken = await refreshAccessToken();
 
         return http(path, options, {
           ...config,
           retryOn401: false,
+          accessTokenOverride: newAccessToken,
         });
       }
 
       throw new ApiError(401, "로그인이 필요합니다.");
     }
-
     const isFormData = options.body instanceof FormData;
+
+    // Headers 객체, 배열, 일반 객체 형태를 모두 처리
+    const headers = new Headers(options.headers);
+
+    if (options.body && !isFormData && !headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    // 호출자가 전달한 인증 헤더보다 현재 쿠키의 토큰을 우선
+    if (config.authRequired && accessToken) {
+      headers.set("Cookie", `accessToken=${accessToken}`);
+      headers.set("Authorization", `Bearer ${accessToken}`);
+    }
 
     const res = await fetch(`${API_BASE_URL}${path}`, {
       ...options,
       credentials: "include",
       signal: controller.signal,
-      headers: {
-        ...(options.body && !isFormData
-          ? { "Content-Type": "application/json" }
-          : {}),
-
-        // ✅ authToken → accessToken
-        ...(config.authRequired && accessToken
-          ? {
-              Cookie: `accessToken=${accessToken}`,
-              Authorization: `Bearer ${accessToken}`,
-            }
-          : {}),
-
-        ...options.headers,
-      },
+      headers,
     });
 
     if (
@@ -68,11 +70,12 @@ export async function http(
       config.authRequired &&
       config.retryOn401 !== false
     ) {
-      await refreshAccessToken();
+      const newAccessToken = await refreshAccessToken();
 
       return http(path, options, {
         ...config,
         retryOn401: false,
+        accessTokenOverride: newAccessToken,
       });
     }
 

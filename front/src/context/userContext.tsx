@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import {createContext , useContext} from "react"
+import { createContext, useContext } from "react";
+import { useGetMe } from "@/app/hook/auth/useGetMe";
 
 export type User = {
   id: string;
@@ -10,30 +11,34 @@ export type User = {
 
 export type UserProps = {
   user: User | null;
+  isPending: boolean;
+  isError: boolean;
 };
 
 type UserProviderProps = {
-  user: User | null;
   children: React.ReactNode;
 };
 
-const UserContext = createContext<UserProps | undefined>(undefined)
+const UserContext = createContext<UserProps | undefined>(undefined);
 
-export default function UserProvider({user,children}:UserProviderProps){
-    return (
-        <UserContext.Provider value={{user}}>
-            {children}
-        </UserContext.Provider>
-    )
+export default function UserProvider({ children }: UserProviderProps) {
+  const { data, isPending, isError } = useGetMe();
 
+  const user = data?.user ?? null;
+
+  return (
+    <UserContext.Provider value={{ user, isPending, isError }}>
+      {children}
+    </UserContext.Provider>
+  );
 }
 
 export function useUser() {
-    const context = useContext(UserContext)
+  const context = useContext(UserContext);
 
-    if(context === undefined){
-        throw new Error("useUser는 UserProvider 안에서 사용해야 합니다.")
-    }
+  if (context === undefined) {
+    throw new Error("useUser는 UserProvider 안에서 사용해야 합니다.");
+  }
 
-    return context
+  return context;
 }
