@@ -41,6 +41,13 @@ export default function EstimateList({
   // 검색어가 변경되면 1페이지부터 다시 조회
   const isFirstRender = useRef(true);
   const loadingRef = useRef(false);
+
+  useEffect(() => {
+    setEstimateList(initialEstimateList);
+    setPage(1);
+    setHasMore(initialEstimateList.length === 3);
+  }, [initialEstimateList]);
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
