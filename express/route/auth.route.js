@@ -6,9 +6,14 @@ const {
   signupController,
   meController,
   refreshController,
+  demoSessionController,
 } = require("../controller/auth.controller");
-const { loginLimiter } = require("../middlewares/rateLimit.middleware");
+const {
+  loginLimiter,
+  demoLimiter,
+} = require("../middlewares/rateLimit.middleware");
 authRoute.post("/login", loginLimiter, loginController);
+authRoute.post("/demo-session", demoLimiter, demoSessionController);
 authRoute.post("/logout", logoutController);
 authRoute.post("/signup", signupController);
 authRoute.post("/refresh", refreshController);

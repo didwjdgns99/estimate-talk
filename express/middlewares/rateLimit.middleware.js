@@ -18,4 +18,13 @@ const loginLimiter = rateLimit({
   },
 });
 
-module.exports = { globalLimiter, loginLimiter };
+const demoLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: {
+    isError: true,
+    message: "데모 세션 생성 요청이 많습니다. 잠시 후 다시 시도해주세요.",
+  },
+});
+
+module.exports = { globalLimiter, loginLimiter, demoLimiter };

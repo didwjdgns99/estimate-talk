@@ -58,6 +58,10 @@ const estimateSchema = new mongoose.Schema(
         message: "견적 품목은 최소 1개 이상이어야 합니다.",
       },
     },
+    demoExpiresAt: {
+      type: Date,
+      expires: 0,
+    },
   },
   {
     timestamps: true,
