@@ -49,6 +49,15 @@ export default function HomeContent() {
         <p className="text-sm md:text-4 mt-3 text-secondary-text tracking-wider">
           전체 견적서를 관리하고 새로운 견적서를 작성하세요
         </p>
+        {!isPending && !user && (
+          <button
+            type="button"
+            onClick={() => window.location.assign("/demo")}
+            className="mt-5 inline-flex rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+          >
+            로그인 없이 데모 체험하기
+          </button>
+        )}
       </section>
       <section className="flex flex-col md:flex md:flex-row justify-space-between w-full mx-auto max-w-6xl px-6 py-10 gap-4">
         <TopCard
