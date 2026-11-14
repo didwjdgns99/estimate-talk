@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { loginAction } from "@/app/action/login.action";
 import type { LoginRequest } from "@/apis/auth";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 /**
  *
@@ -12,6 +13,8 @@ import { toast } from "sonner";
  */
 export function useLogin() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (payload: LoginRequest) => {
       const result = await loginAction(payload);
@@ -21,8 +24,16 @@ export function useLogin() {
       }
       return result;
     },
-    onSuccess: () => {
+    onSuccess: (result) => {
+      queryClient.setQueryData(["me"], {
+        isError: false,
+        user: result.user,
+      });
+      queryClient.removeQueries({ queryKey: ["estimate"] });
+      queryClient.removeQueries({ queryKey: ["estimateDetail"] });
+      queryClient.removeQueries({ queryKey: ["companyInfo"] });
       router.push("/");
+      router.refresh();
       toast.success("로그인 성공", { duration: 2000 });
     },
     onError: (error) => {

@@ -18,6 +18,12 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
+## Interview demo
+
+Share the deployed frontend URL with `/demo` appended (for example, `https://your-site.example/demo`). It creates an isolated demo session, loads sample estimates, and redirects to the dashboard without requiring a login. Demo estimates and company information are removed automatically after 7 days.
+
+The frontend must be configured with `NEXT_PUBLIC_API_BASE_URL`, and the API must have `JWT_SECRET`, `JWT_REFRESH_SECRET`, and a working MongoDB connection.
+
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
 ## Learn More

@@ -6,11 +6,13 @@ import Link from "next/link";
 import { useUser } from "@/context/userContext";
 import logoutAction from "@/app/action/logout.action";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 
 export type User = {
   id: string;
   name: string;
   email: string;
+  isDemo?: boolean;
 };
 
 export type UserProps = {
@@ -20,10 +22,16 @@ export type UserProps = {
 export default function Header() {
   const { user } = useUser();
   const router = useRouter();
+  const queryClient = useQueryClient();
+
   const handleLogout = async () => {
     const result = await logoutAction();
     if (result?.isError) return;
 
+    queryClient.setQueryData(["me"], { isError: false, user: null });
+    queryClient.removeQueries({ queryKey: ["estimate"] });
+    queryClient.removeQueries({ queryKey: ["estimateDetail"] });
+    queryClient.removeQueries({ queryKey: ["companyInfo"] });
     router.push("/");
     router.refresh();
   };
@@ -50,14 +58,21 @@ export default function Header() {
           {user ? (
             <>
               <span className="text-main-text text-xs sm:text-[16px]">
-                <span className="text-primary">{user.name}님</span> 반갑습니다
+                {user.isDemo ? (
+                  <span className="text-primary">데모 이용 중</span>
+                ) : (
+                  <>
+                    <span className="text-primary">{user.name}님</span>{" "}
+                    반갑습니다
+                  </>
+                )}
               </span>
 
               <button
                 onClick={handleLogout}
                 className="cursor-pointer hover:text-primary transition text-xs sm:text-[16px]"
               >
-                로그아웃
+                {user.isDemo ? "데모 종료" : "로그아웃"}
               </button>
             </>
           ) : (
