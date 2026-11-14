@@ -2,10 +2,12 @@
 
 import TopCard from "@/component/common/topcard/TopCard";
 import { FileText, Calendar, TrendingUp } from "lucide-react";
-import { useGetEstimate } from "@/app/hook/estimate/useGetEstimate";
+import { useGetInfiniteEstimate } from "@/app/hook/estimate/useGetEstimate";
 import { EstimateItem } from "@/apis/Esimate";
 import EstimateSection from "@/component/common/estimateSection/page";
 import { useUser } from "@/context/userContext";
+import { useState } from "react";
+import useDebounce from "@/app/hook/useDebounce/useDebounce";
 
 type Estimate = {
   _id: string;
@@ -17,15 +19,31 @@ type Estimate = {
 };
 
 export default function HomeContent() {
+  const [searchKeyword, setSearchKeyword] = useState("");
   const { user, isPending } = useUser();
-  const { data, isLoading, isError } = useGetEstimate(!!user);
-  const estimateResult = data;
 
-  const estimateList: Estimate[] = estimateResult?.data?.estimateList ?? [];
+  const debouncedSearchKeyword = useDebounce({
+    value: searchKeyword,
+    delay: 500,
+  });
 
-  const estimateLength = estimateResult?.data?.totalCount ?? 0;
+  const {
+    data: estimateResult,
+    fetchNextPage,
+    hasNextPage,
+    isFetching,
+    isFetchingNextPage,
+  } = useGetInfiniteEstimate(!!user, debouncedSearchKeyword);
 
-  const thisMonthEstimateList = estimateResult?.data?.thisMonthCount ?? 0;
+  const estimateList: Estimate[] =
+    estimateResult?.pages.flatMap((page) => page?.data?.estimateList ?? []) ??
+    [];
+  console.log("estimateResult", estimateResult);
+  const firstPage = estimateResult?.pages[0];
+
+  const estimateLength = firstPage?.data?.totalCount ?? 0;
+
+  const thisMonthEstimateList = firstPage?.data?.thisMonthCount ?? 0;
 
   const recentEstimate = estimateList[0];
 
@@ -81,7 +99,19 @@ export default function HomeContent() {
       </section>
       <section className="mx-auto max-w-6xl px-6">
         <div className="rounded-lg bg-white p-6 shadow">
-          <EstimateSection estimateList={estimateList} />
+          <EstimateSection
+            estimateList={estimateList}
+            hasNextPage={hasNextPage}
+            isFetching={isFetching}
+            searchKeyword={searchKeyword}
+            setSearchKeyword={setSearchKeyword}
+            isFetchingNextPage={isFetchingNextPage}
+            onLoadMore={() => {
+              if (hasNextPage && !isFetching) {
+                void fetchNextPage();
+              }
+            }}
+          />
         </div>
       </section>
     </main>

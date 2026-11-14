@@ -4,21 +4,39 @@ import EstimateSearch from "./estimateSearch/search";
 import EstimateList from "./estimateList/estimateList";
 import Link from "next/link";
 import Button from "@/component/common/button/button";
-import { useState } from "react";
-import useDebounce from "@/app/hook/useDebounce/useDebounce";
 import { useUser } from "@/context/userContext";
+import type { Dispatch, SetStateAction } from "react";
+import type { EstimateItem } from "@/apis/Esimate";
+
+type Estimate = {
+  _id: string;
+  title: string;
+  customer: string;
+  taxType: "taxable" | "taxFree";
+  items: EstimateItem[];
+  createdAt: string;
+};
+
+type EstimateSectionProps = {
+  estimateList: Estimate[];
+  searchKeyword: string;
+  setSearchKeyword: Dispatch<SetStateAction<string>>;
+  hasNextPage: boolean;
+  isFetching: boolean;
+  isFetchingNextPage: boolean;
+  onLoadMore: () => void;
+};
+
 export default function EstimateSection({
   estimateList,
-}: {
-  estimateList: any[];
-}) {
-  const [searchKeyword, setSearchKeyword] = useState("");
+  searchKeyword,
+  setSearchKeyword,
+  hasNextPage,
+  isFetching,
+  isFetchingNextPage,
+  onLoadMore,
+}: EstimateSectionProps) {
   const { user: currentUser, isPending } = useUser();
-
-  const debouncedSearchKeyword = useDebounce({
-    value: searchKeyword,
-    delay: 500,
-  });
 
   if (isPending) {
     return <div>로그인 정보를 확인하고 있습니다...</div>;
@@ -33,6 +51,7 @@ export default function EstimateSection({
             setSearchKeyword={setSearchKeyword}
           />
         </div>
+
         <Link
           href={currentUser ? "/estimate" : "/login"}
           className="order-1 md:order-2"
@@ -43,10 +62,14 @@ export default function EstimateSection({
           </Button>
         </Link>
       </div>
+
       <EstimateList
         user={currentUser}
-        initialEstimateList={estimateList}
-        debouncedSearchKeyword={debouncedSearchKeyword}
+        estimateList={estimateList}
+        hasNextPage={hasNextPage}
+        isFetching={isFetching}
+        isFetchingNextPage={isFetchingNextPage}
+        onLoadMore={onLoadMore}
       />
     </div>
   );
