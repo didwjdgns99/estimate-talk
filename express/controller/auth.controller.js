@@ -7,12 +7,54 @@
  * 로그아웃에서 cookie clear 해주기
  */
 const jwt = require("jsonwebtoken");
+const mongoose = require("mongoose");
 
 const {
   loginService,
   signupService,
   meService,
 } = require("../service/auth.service");
+const { createDemoData } = require("../service/demo.service");
+
+async function demoSessionController(req, res) {
+  const secret = process.env.JWT_SECRET;
+  const refreshSecret = process.env.JWT_REFRESH_SECRET;
+
+  if (!secret || !refreshSecret) {
+    return res.status(500).json({
+      isError: true,
+      message: "시크릿키가 설정되지 않았습니다.",
+    });
+  }
+
+  try {
+    const id = new mongoose.Types.ObjectId().toString();
+    const demoExpiresAt = Math.floor(Date.now() / 1000) + 7 * 24 * 60 * 60;
+    const claims = { id, isDemo: true, demoExpiresAt };
+    const accessToken = jwt.sign(claims, secret, { expiresIn: "12h" });
+    const refreshToken = jwt.sign(claims, refreshSecret, { expiresIn: "7d" });
+
+    await createDemoData(id, new Date(demoExpiresAt * 1000));
+
+    return res.status(201).json({
+      isError: false,
+      user: {
+        id,
+        name: "데모 사용자",
+        email: "demo@estimate-talk.local",
+        isDemo: true,
+      },
+      accessToken,
+      refreshToken,
+    });
+  } catch (error) {
+    console.error("demoSessionController error:", error);
+    return res.status(500).json({
+      isError: true,
+      message: "데모 세션을 시작하지 못했습니다.",
+    });
+  }
+}
 
 async function loginController(req, res) {
   try {
@@ -75,6 +117,12 @@ function refreshController(req, res) {
     const accessToken = jwt.sign(
       {
         id: decoded.id,
+        ...(decoded.isDemo
+          ? {
+              isDemo: true,
+              demoExpiresAt: decoded.demoExpiresAt,
+            }
+          : {}),
       },
       accessSecret, //액세스토큰이 정상이라는 것을 증명하기 위해 시크릿키를 사용하여 서명
       {
@@ -144,6 +192,18 @@ async function signupController(req, res) {
 
 async function meController(req, res) {
   try {
+    if (req.user.isDemo) {
+      return res.status(200).json({
+        isError: false,
+        user: {
+          id: req.user.id,
+          name: "데모 사용자",
+          email: "demo@estimate-talk.local",
+          isDemo: true,
+        },
+      });
+    }
+
     const user = await meService(req.user.id);
 
     return res.status(200).json({
@@ -166,4 +226,5 @@ module.exports = {
   logoutController,
   signupController,
   meController,
+  demoSessionController,
 };

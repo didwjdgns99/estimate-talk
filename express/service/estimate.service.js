@@ -1,7 +1,7 @@
 const Estimate = require("../models/estimate.model");
 const AppError = require("../utils/AppError");
 
-async function createEstimateService(userId, payload) {
+async function createEstimateService(userId, payload, demoExpiresAt) {
   const { items, title, taxType, customer } = payload;
 
   const estimate = await Estimate.create({
@@ -10,6 +10,7 @@ async function createEstimateService(userId, payload) {
     customer,
     taxType,
     items,
+    ...(demoExpiresAt ? { demoExpiresAt } : {}),
   });
 
   return estimate;

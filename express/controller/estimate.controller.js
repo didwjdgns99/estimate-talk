@@ -12,7 +12,14 @@ async function createEstimateController(req, res, next) {
     const userId = req.user.id;
     const payload = req.body;
 
-    const estimate = await createEstimateService(userId, payload);
+    const demoExpiresAt = req.user.isDemo
+      ? new Date(req.user.demoExpiresAt * 1000)
+      : undefined;
+    const estimate = await createEstimateService(
+      userId,
+      payload,
+      demoExpiresAt,
+    );
 
     return res.status(201).json({
       message: "견적서 생성완료",

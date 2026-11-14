@@ -92,6 +92,10 @@ const infoSchema = new mongoose.Schema(
       type: String,
       default: "", //직인 이미지 파일 경로
     },
+    demoExpiresAt: {
+      type: Date,
+      expires: 0,
+    },
   },
   {
     timestamps: true,
